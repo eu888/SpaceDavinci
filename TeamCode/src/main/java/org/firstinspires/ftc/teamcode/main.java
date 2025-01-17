@@ -13,7 +13,7 @@ public class main extends OpMode{
     Servo sr1, sr2;
     double sr1Position = 0.5;
     int a = 1;
-    double sm = 0.375;
+    double sm = 0.50;
 
     @Override
     public void init(){
@@ -122,8 +122,8 @@ public class main extends OpMode{
             sr1.setPosition(0.77);
         } else {
             motorRB.setPower(-(-lx+ly)*sm);
-            motorRF.setPower(-(lx+ly-rx)*sm);
-            motorLF.setPower(-(-lx+ly+rx)*sm);
+            motorRF.setPower(-(lx+ly+rx)*sm);
+            motorLF.setPower(-(-lx+ly-rx)*sm);
             motorLB.setPower(-(lx+ly)*sm);
             motorE.setPower(0.0);
             motorB.setPower(0.0);
@@ -134,5 +134,7 @@ public class main extends OpMode{
 
 
     }
+
+
 
 }

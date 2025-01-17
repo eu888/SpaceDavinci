@@ -57,6 +57,7 @@ public class AutoRed extends OpMode {
     @Override
     public void loop() {
         telemetry();
+        move(motorRB,motorRF,motorLF, motorLB, 20, 20, 20, 20);
     }
 
     public List<TrackedObject> getDetectedYellowObjects() {
@@ -272,5 +273,17 @@ public class AutoRed extends OpMode {
         telemetry.addData("Motor E", motorE.getCurrentPosition());
         telemetry.addData("Servo sr1", sr1.getPosition());
         telemetry.addData("Servo sr2", sr2.getPosition());
+    }
+    public void go_to(int ticks, DcMotor motor){
+        motor.setTargetPosition(ticks);
+        motor.setPower(0.5);
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void move(DcMotor motor1, DcMotor motor2, DcMotor motor3, DcMotor motor4, int ticks1, int ticks2, int ticks3, int ticks4){
+        go_to(ticks1, motor1);
+        go_to(ticks2, motor2);
+        go_to(ticks3, motor3);
+        go_to(ticks4, motor4);
     }
 }
