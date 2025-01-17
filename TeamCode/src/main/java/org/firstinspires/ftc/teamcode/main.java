@@ -11,8 +11,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class main extends OpMode{
     DcMotor motorLB,motorLF,motorRB,motorRF,motorB, motorE;
     Servo sr1, sr2;
-    double sr1Position = 0.5;
-    int a = 1;
     double sm = 0.50;
 
     @Override

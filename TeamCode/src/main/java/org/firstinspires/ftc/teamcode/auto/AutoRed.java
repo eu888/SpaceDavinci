@@ -15,7 +15,6 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-//import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.annotation.Contract;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -26,8 +25,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-@Autonomous(name="Auto3.2.4")
+@Autonomous(name="Auto3.2.4", group = "Red")
 public class AutoRed extends OpMode {
     private OpenCvCamera webcam;
     private List<TrackedObject> trackedObjects = new ArrayList<>();
@@ -51,13 +51,17 @@ public class AutoRed extends OpMode {
         });
 
         motorSetup();
-        motorEncoderRunUp();
     }
 
     @Override
     public void loop() {
         telemetry();
-        move(motorRB,motorRF,motorLF, motorLB, 20, 20, 20, 20);
+
+        runMotors(new DcMotor[]{motorRF,motorLB}, -0.35);
+        runMotors(new DcMotor[]{motorRB, motorLF}, 0.35);
+        sleep(300);
+        stopMotors(new DcMotor[]{motorRB, motorRF, motorLF, motorLB});
+        requestOpModeStop();
     }
 
     public List<TrackedObject> getDetectedYellowObjects() {
@@ -274,16 +278,25 @@ public class AutoRed extends OpMode {
         telemetry.addData("Servo sr1", sr1.getPosition());
         telemetry.addData("Servo sr2", sr2.getPosition());
     }
-    public void go_to(int ticks, DcMotor motor){
-        motor.setTargetPosition(ticks);
-        motor.setPower(0.5);
-        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    private void runMotors(@NonNull DcMotor[] motors, double power){
+        for(DcMotor motor : motors){
+            motor.setPower(power);
+        }
     }
 
-    public void move(DcMotor motor1, DcMotor motor2, DcMotor motor3, DcMotor motor4, int ticks1, int ticks2, int ticks3, int ticks4){
-        go_to(ticks1, motor1);
-        go_to(ticks2, motor2);
-        go_to(ticks3, motor3);
-        go_to(ticks4, motor4);
+    private void stopMotors(@NonNull DcMotor[] motors){
+        for(DcMotor motor : motors){
+            motor.setPower(0.0);
+        }
     }
+
+    private void sleep(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
