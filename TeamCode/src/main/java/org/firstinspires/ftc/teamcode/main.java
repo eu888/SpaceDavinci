@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.IMU;
 
 
 @TeleOp(name="Ver_2.7.2")
@@ -41,6 +43,14 @@ public class main extends OpMode{
 
         sr1 = hardwareMap.get(Servo.class, "sr1");
         sr2 = hardwareMap.get(Servo.class, "sr2");
+
+        IMU imu = hardwareMap.get(IMU.class, "imu");
+        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+        ));
+
+        imu.initialize(parameters);
 
         telemetry.addData("Hardware", "Initialized");
 
@@ -113,16 +123,22 @@ public class main extends OpMode{
         } else if (gamepad2.square) {
             sr2.setPosition(0.19);
         } else if (gamepad2.circle) {
-            sr2.setPosition(0.09);
+            sr2.setPosition(0.07);
         } else if (gamepad2.right_bumper) {
             sr1.setPosition(0.5);
         } else if (gamepad2.left_bumper) {
             sr1.setPosition(0.77);
-        } else {
-            motorRB.setPower(-(-lx+ly)*sm);
+        }else if(gamepad2.right_stick_button) {
+            motorE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motorE.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        }else {
+            motorRB.setPower(-(-lx+ly+rx)*sm);
             motorRF.setPower(-(lx+ly+rx)*sm);
             motorLF.setPower(-(-lx+ly-rx)*sm);
-            motorLB.setPower(-(lx+ly)*sm);
+            motorLB.setPower(-(lx+ly-rx)*sm);
             motorE.setPower(0.0);
             motorB.setPower(0.0);
 

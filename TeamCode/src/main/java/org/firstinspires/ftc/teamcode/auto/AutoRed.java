@@ -29,6 +29,11 @@ import java.util.concurrent.TimeUnit;
 
 @Autonomous(name="Auto3.2.4", group = "Red")
 public class AutoRed extends OpMode {
+    Mat hsv = new Mat();
+    Mat mask1 = new Mat();
+    Mat mask2 = new Mat();
+    Mat combinedMask = new Mat();
+    Mat hierarchy = new Mat();
     private OpenCvCamera webcam;
     private List<TrackedObject> trackedObjects = new ArrayList<>();
     private static final double MIN_CONTOUR_AREA = 500.0;
@@ -57,9 +62,11 @@ public class AutoRed extends OpMode {
     public void loop() {
         telemetry();
 
+
+
         runMotors(new DcMotor[]{motorRF,motorLB}, -0.35);
         runMotors(new DcMotor[]{motorRB, motorLF}, 0.35);
-        sleep(300);
+        sleep(3600);
         stopMotors(new DcMotor[]{motorRB, motorRF, motorLF, motorLB});
         requestOpModeStop();
     }
@@ -74,11 +81,6 @@ public class AutoRed extends OpMode {
         private int relativeY;
         @Override
         public Mat processFrame(Mat input) {
-            Mat hsv = new Mat();
-            Mat mask1 = new Mat();
-            Mat mask2 = new Mat();
-            Mat combinedMask = new Mat();
-            Mat hierarchy = new Mat();
             List<MatOfPoint> contours = new ArrayList<>();
             Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
 
@@ -253,20 +255,7 @@ public class AutoRed extends OpMode {
 
     }
 
-    public void motorEncoderRunUp(){
-        motorRB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorRB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorRF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorRF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorLF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorLF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorLB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorLB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorE.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
+
 
     public void telemetry(){
         telemetry.addData("Motor RB", motorRB.getCurrentPosition());
@@ -297,6 +286,14 @@ public class AutoRed extends OpMode {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private double time(double DISTANCE_TO_MOVE_INCHES){
+        double wheelCircumference = Math.PI * 3.779;
+
+        double speedInchesPerSecond = (320 * wheelCircumference) / 60.0;
+
+        return DISTANCE_TO_MOVE_INCHES / speedInchesPerSecond;
     }
 
 }
