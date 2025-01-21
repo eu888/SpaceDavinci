@@ -40,6 +40,23 @@ public class Teleop1 extends LinearOpMode{
 
         if (isStopRequested()) return;
 
-        while (opModeIsActive()){}
+        while (opModeIsActive()){
+            double lx = gamepad1.left_stick_x;
+            double ly = -gamepad1.left_stick_y;
+            double rx = gamepad1.right_stick_x;
+            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+            double rotX = lx * Math.cos(-botHeading) - ly * Math.sin(-botHeading);
+            double rotY = lx * Math.sin(-botHeading) + ly * Math.cos(-botHeading);
+            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+            double LBPower = (rotX);
+
+            rotX = rotX * 1.1;
+
+            if (gamepad1.options){
+                imu.resetYaw();
+            }
+
+
+        }
     }
 }
