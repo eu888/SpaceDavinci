@@ -33,6 +33,12 @@ public class AutoRed extends OpMode {
     private List<TrackedObject> trackedObjects = new ArrayList<>();
     private static final double MIN_CONTOUR_AREA = 500.0;
     private static final double MAX_DISTANCE = 50.0;
+    List<MatOfPoint> contours = new ArrayList<>();
+    Mat hsv = new Mat();
+    Mat mask1 = new Mat();
+    Mat mask2 = new Mat();
+    Mat combinedMask = new Mat();
+    Mat hierarchy = new Mat();
 
     DcMotor motorLB,motorLF,motorRB,motorRF,motorB, motorE;
     Servo sr1, sr2;
@@ -69,12 +75,6 @@ public class AutoRed extends OpMode {
         private int relativeY;
         @Override
         public Mat processFrame(Mat input) {
-            Mat hsv = new Mat();
-            Mat mask1 = new Mat();
-            Mat mask2 = new Mat();
-            Mat combinedMask = new Mat();
-            Mat hierarchy = new Mat();
-            List<MatOfPoint> contours = new ArrayList<>();
             Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
 
             Scalar lowerYellow1 = new Scalar(20, 100, 100); 
@@ -232,6 +232,7 @@ public class AutoRed extends OpMode {
         motorLB = hardwareMap.get(DcMotor.class, "mlb");
         motorB = hardwareMap.get(DcMotor.class, "mb");
         motorE = hardwareMap.get(DcMotor.class, "me");
+//        motorHardwareSetUp(new DcMotor[]{motorLB, motorLF, motorRF, motorRB, motorB, motorE}, new String[]{"mlb", "mlf", "mrf", "mrb", "mb", "me"});
 
         motorRB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -272,5 +273,21 @@ public class AutoRed extends OpMode {
         telemetry.addData("Motor E", motorE.getCurrentPosition());
         telemetry.addData("Servo sr1", sr1.getPosition());
         telemetry.addData("Servo sr2", sr2.getPosition());
+    }
+
+    public void motorSetPower(@NonNull DcMotor[] motors, Double power){
+        for(DcMotor motor : motors){
+            if(power == null){
+                motor.setPower(0.0);
+            } else {
+                motor.setPower(power);
+            }
+        }
+    }
+
+    public void motorHardwareSetUp(@NonNull DcMotor[] motors,@NonNull String[] ids){
+        for (int i = 0; i < ids.length; i++) {
+            motors[i] = hardwareMap.get(DcMotor.class, ids[i]);
+        }
     }
 }
