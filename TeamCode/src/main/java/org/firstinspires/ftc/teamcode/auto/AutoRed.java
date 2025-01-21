@@ -62,7 +62,7 @@ public class AutoRed extends OpMode {
 
     @Override
     public void loop() {
-        telemetry();
+//        telemetry();
     }
 
     public List<TrackedObject> getDetectedYellowObjects() {
