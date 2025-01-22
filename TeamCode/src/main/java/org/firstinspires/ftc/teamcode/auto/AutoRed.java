@@ -15,7 +15,6 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-//import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.annotation.Contract;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -26,19 +25,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-@Autonomous(name="Auto3.2.4")
+@Autonomous(name="Auto3.2.4", group = "Red")
 public class AutoRed extends OpMode {
-    private OpenCvCamera webcam;
-    private List<TrackedObject> trackedObjects = new ArrayList<>();
-    private static final double MIN_CONTOUR_AREA = 500.0;
-    private static final double MAX_DISTANCE = 50.0;
-    List<MatOfPoint> contours = new ArrayList<>();
     Mat hsv = new Mat();
     Mat mask1 = new Mat();
     Mat mask2 = new Mat();
     Mat combinedMask = new Mat();
     Mat hierarchy = new Mat();
+    private OpenCvCamera webcam;
+    private List<TrackedObject> trackedObjects = new ArrayList<>();
+    private static final double MIN_CONTOUR_AREA = 500.0;
+    private static final double MAX_DISTANCE = 50.0;
 
     DcMotor motorLB,motorLF,motorRB,motorRF,motorB, motorE;
     Servo sr1, sr2;
@@ -57,12 +56,19 @@ public class AutoRed extends OpMode {
         });
 
         motorSetup();
-        motorEncoderRunUp();
     }
 
     @Override
     public void loop() {
-//        telemetry();
+        telemetry();
+
+
+
+        runMotors(new DcMotor[]{motorRF,motorLB}, -0.35);
+        runMotors(new DcMotor[]{motorRB, motorLF}, 0.35);
+        sleep(3600);
+        stopMotors(new DcMotor[]{motorRB, motorRF, motorLF, motorLB});
+        requestOpModeStop();
     }
 
     public List<TrackedObject> getDetectedYellowObjects() {
@@ -75,6 +81,7 @@ public class AutoRed extends OpMode {
         private int relativeY;
         @Override
         public Mat processFrame(Mat input) {
+            List<MatOfPoint> contours = new ArrayList<>();
             Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
 
             Scalar lowerYellow1 = new Scalar(20, 100, 100); 
@@ -232,7 +239,6 @@ public class AutoRed extends OpMode {
         motorLB = hardwareMap.get(DcMotor.class, "mlb");
         motorB = hardwareMap.get(DcMotor.class, "mb");
         motorE = hardwareMap.get(DcMotor.class, "me");
-//        motorHardwareSetUp(new DcMotor[]{motorLB, motorLF, motorRF, motorRB, motorB, motorE}, new String[]{"mlb", "mlf", "mrf", "mrb", "mb", "me"});
 
         motorRB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -249,20 +255,7 @@ public class AutoRed extends OpMode {
 
     }
 
-    public void motorEncoderRunUp(){
-        motorRB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorRB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorRF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorRF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorLF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorLF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorLB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorLB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorE.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
+
 
     public void telemetry(){
         telemetry.addData("Motor RB", motorRB.getCurrentPosition());
@@ -275,19 +268,32 @@ public class AutoRed extends OpMode {
         telemetry.addData("Servo sr2", sr2.getPosition());
     }
 
-    public void motorSetPower(@NonNull DcMotor[] motors, Double power){
+    private void runMotors(@NonNull DcMotor[] motors, double power){
         for(DcMotor motor : motors){
-            if(power == null){
-                motor.setPower(0.0);
-            } else {
-                motor.setPower(power);
-            }
+            motor.setPower(power);
         }
     }
 
-    public void motorHardwareSetUp(@NonNull DcMotor[] motors,@NonNull String[] ids){
-        for (int i = 0; i < ids.length; i++) {
-            motors[i] = hardwareMap.get(DcMotor.class, ids[i]);
+    private void stopMotors(@NonNull DcMotor[] motors){
+        for(DcMotor motor : motors){
+            motor.setPower(0.0);
         }
     }
+
+    private void sleep(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private double time(double DISTANCE_TO_MOVE_INCHES){
+        double wheelCircumference = Math.PI * 3.779;
+
+        double speedInchesPerSecond = (320 * wheelCircumference) / 60.0;
+
+        return DISTANCE_TO_MOVE_INCHES / speedInchesPerSecond;
+    }
+
 }
