@@ -60,15 +60,7 @@ public class AutoRed extends OpMode {
 
     @Override
     public void loop() {
-        telemetry();
 
-
-
-        runMotors(new DcMotor[]{motorRF,motorLB}, -0.35);
-        runMotors(new DcMotor[]{motorRB, motorLF}, 0.35);
-        sleep(3600);
-        stopMotors(new DcMotor[]{motorRB, motorRF, motorLF, motorLB});
-        requestOpModeStop();
     }
 
     public List<TrackedObject> getDetectedYellowObjects() {

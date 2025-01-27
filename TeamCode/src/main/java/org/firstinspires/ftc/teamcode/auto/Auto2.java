@@ -20,7 +20,6 @@ public class Auto2 extends OpMode{
 
     @Override
     public void loop() {
-        while (()){
         forwards(power);
         sleep(2320);
         allStop();
@@ -45,7 +44,7 @@ public class Auto2 extends OpMode{
         backwards(power);
         sleep(2120);
         allStop();
-    }
+
         requestOpModeStop();
     }
 

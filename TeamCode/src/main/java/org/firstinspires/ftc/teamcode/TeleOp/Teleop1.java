@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+@TeleOp(name="Test")
 public class Teleop1 extends LinearOpMode{
 
     DcMotor motorLB,motorLF,motorRB,motorRF,motorB, motorE;
@@ -49,10 +50,10 @@ public class Teleop1 extends LinearOpMode{
             rotX = rotX * 1.1;
             double rotY = lx * Math.sin(-botHeading) + ly * Math.cos(-botHeading);
             double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-            double LBPower = (rotY - rotX + rx) / denominator;
-            double LFPower = (rotY + rotX + rx) / denominator;
-            double RFPower = (rotY - rotX - rx) / denominator;
-            double RBPower = (rotY + rotX - rx) / denominator;
+            double LBPower = -((rotY - rotX + rx) / denominator) * 0.485;
+            double LFPower = -((rotY + rotX + rx) / denominator) * 0.485;
+            double RFPower = -((rotY - rotX - rx) / denominator) * 0.485;
+            double RBPower = -((rotY + rotX - rx) / denominator) * 0.485;
 
             if (gamepad1.options){
                 imu.resetYaw();
