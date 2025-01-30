@@ -5,13 +5,20 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PWMOutputImpl;
+import com.qualcomm.robotcore.hardware.PwmControl;
+import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp(name="Test")
 public class Teleop1 extends LinearOpMode{
 
     DcMotor motorLB,motorLF,motorRB,motorRF,motorB, motorE;
+    Servo sr1;
+    int limit = 1225;
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -30,6 +37,9 @@ public class Teleop1 extends LinearOpMode{
         motorRB.setDirection(DcMotorSimple.Direction.REVERSE);
         motorRF.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        sr1 = hardwareMap.get(Servo.class, "sr1");
+//        sr2 = hardwareMap.get(Servo.class, "sr2");
+
         IMU imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
@@ -42,6 +52,9 @@ public class Teleop1 extends LinearOpMode{
         if (isStopRequested()) return;
 
         while (opModeIsActive()){
+            telemetry.addData("Sr1", sr1.getPosition());
+            telemetry.update();
+
             double lx = gamepad1.left_stick_x;
             double ly = -gamepad1.left_stick_y;
             double rx = gamepad1.right_stick_x;
@@ -63,6 +76,36 @@ public class Teleop1 extends LinearOpMode{
             motorLF.setPower(LFPower);
             motorRF.setPower(RFPower);
             motorRB.setPower(RBPower);
+
+
+
+            if (gamepad2.dpad_up) {
+                motorB.setPower(0.37);
+            } else if (gamepad2.dpad_down) {
+                if(motorE.getCurrentPosition() < limit){
+                    motorB.setPower(-0.37);
+                }else {
+                    motorB.setPower(0.0);
+                }
+            } else if (gamepad2.dpad_right) {
+                int motorBPosition = motorB.getCurrentPosition();
+
+                if (motorBPosition < -88) {
+                    if (motorE.getCurrentPosition() <= limit) {
+                        motorE.setPower(0.5);
+                    } else {
+                        motorE.setPower(0);
+                    }
+                } else {
+                    motorE.setPower(0.5);
+                }
+            } else if (gamepad2.dpad_left) {
+                motorE.setPower(-0.5);//1284
+            } else if (gamepad2.triangle) {
+                sr1.setPosition(0.5);
+            } else if(gamepad2.cross){
+                sr1.setPosition(0.525);
+            }
 
         }
     }
