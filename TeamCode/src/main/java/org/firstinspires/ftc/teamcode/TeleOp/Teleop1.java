@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PWMOutputImpl;
 import com.qualcomm.robotcore.hardware.PwmControl;
-import com.qualcomm.robotcore.hardware.*;
+//import com.qualcomm.robotcore.hardware.;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -16,8 +16,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 @TeleOp(name="Test")
 public class Teleop1 extends LinearOpMode{
 
+
+
     DcMotor motorLB,motorLF,motorRB,motorRF,motorB, motorE;
-    Servo sr1;
+    Servo sr1, sr2, sr3;
     int limit = 1225;
 
     @Override
@@ -38,7 +40,8 @@ public class Teleop1 extends LinearOpMode{
         motorRF.setDirection(DcMotorSimple.Direction.REVERSE);
 
         sr1 = hardwareMap.get(Servo.class, "sr1");
-//        sr2 = hardwareMap.get(Servo.class, "sr2");
+        sr2 = hardwareMap.get(Servo.class, "sr2");
+        sr3 = hardwareMap.get(Servo.class, "sr3");
 
         IMU imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -105,6 +108,14 @@ public class Teleop1 extends LinearOpMode{
                 sr1.setPosition(0.5);
             } else if(gamepad2.cross){
                 sr1.setPosition(0.525);
+            }  else if(gamepad2.square){
+                sr2.setPosition(0.5);
+            } else if(gamepad2.circle){
+                sr2.setPosition(0.0);
+            } else if(gamepad2.left_trigger != 0){
+                sr3.setPosition(0.0);
+            } else if (gamepad2.right_trigger != 0) {
+                sr3.setPosition(1.0);
             }
 
         }
