@@ -79,6 +79,8 @@ public class Teleop1 extends LinearOpMode{
             motorLF.setPower(LFPower);
             motorRF.setPower(RFPower);
             motorRB.setPower(RBPower);
+            motorE.setPower(0.0);
+            motorB.setPower(0.0);
 
 
 
