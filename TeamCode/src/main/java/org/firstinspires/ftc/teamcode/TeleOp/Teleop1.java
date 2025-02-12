@@ -36,12 +36,14 @@ public class Teleop1 extends LinearOpMode{
         motorLB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorRB.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorRF.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorLF.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorLB.setDirection(DcMotorSimple.Direction.REVERSE);
 
         sr1 = hardwareMap.get(Servo.class, "sr1");
         sr2 = hardwareMap.get(Servo.class, "sr2");
         sr3 = hardwareMap.get(Servo.class, "sr3");
+
+        encoderRest();
 
         IMU imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -55,7 +57,11 @@ public class Teleop1 extends LinearOpMode{
         if (isStopRequested()) return;
 
         while (opModeIsActive()){
-            telemetry.addData("Sr1", sr1.getPosition());
+            telemetry.addData("Motor B", motorB.getCurrentPosition());
+            telemetry.addData("Motor E", motorE.getCurrentPosition());
+            telemetry.addData("Servo sr1", sr1.getPosition());
+            telemetry.addData("Servo sr2", sr2.getPosition());
+            telemetry.addData("Servo sr3", sr3.getPosition());
             telemetry.update();
 
             double lx = gamepad1.left_stick_x;
@@ -75,10 +81,10 @@ public class Teleop1 extends LinearOpMode{
                 imu.resetYaw();
             }
 
-            motorLB.setPower(LBPower);
-            motorLF.setPower(LFPower);
-            motorRF.setPower(RFPower);
-            motorRB.setPower(RBPower);
+            motorRB.setPower(-(-lx+ly+rx)*0.5);
+            motorRF.setPower(-(lx+ly+rx)*0.5);
+            motorLF.setPower(-(-lx+ly-rx)*0.5);
+            motorLB.setPower(-(lx+ly-rx)*0.5);
             motorE.setPower(0.0);
             motorB.setPower(0.0);
 
@@ -107,19 +113,28 @@ public class Teleop1 extends LinearOpMode{
             } else if (gamepad2.dpad_left) {
                 motorE.setPower(-0.5);//1284
             } else if (gamepad2.triangle) {
-                sr1.setPosition(0.5);
+                sr1.setPosition(0.3125);
             } else if(gamepad2.cross){
-                sr1.setPosition(0.525);
+                sr1.setPosition(0.4375);
             }  else if(gamepad2.square){
                 sr2.setPosition(0.5);
             } else if(gamepad2.circle){
-                sr2.setPosition(0.0);
+                sr2.setPosition(0.7);
             } else if(gamepad2.left_trigger != 0){
-                sr3.setPosition(0.0);
+                sr3.setPosition(0.5);
             } else if (gamepad2.right_trigger != 0) {
-                sr3.setPosition(1.0);
+                sr3.setPosition(0.2);
+            } else if(gamepad2.right_stick_button){
+                encoderRest();
             }
 
         }
+    }
+
+    public void encoderRest(){
+        motorE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorE.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }

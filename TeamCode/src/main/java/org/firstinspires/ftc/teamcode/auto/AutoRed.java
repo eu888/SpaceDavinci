@@ -15,7 +15,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import com.acmerobotics.dashboard.FtcDashboard;
+//import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -55,7 +55,7 @@ public class AutoRed extends OpMode {
             @Override
             public void onError(int errorCode) {}
         });
-        FtcDashboard.getInstance().startCameraStream(webcam, 30);
+//        FtcDashboard.getInstance().startCameraStream(webcam, 30);
         motorSetup();
     }
 
@@ -261,19 +261,19 @@ public class AutoRed extends OpMode {
         telemetry.addData("Servo sr2", sr2.getPosition());
     }
 
-    private void runMotors(@NonNull DcMotor[] motors, double power){
+    public void runMotors(@NonNull DcMotor[] motors, double power){
         for(DcMotor motor : motors){
             motor.setPower(power);
         }
     }
 
-    private void stopMotors(@NonNull DcMotor[] motors){
+    public void stopMotors(@NonNull DcMotor[] motors){
         for(DcMotor motor : motors){
             motor.setPower(0.0);
         }
     }
 
-    private void sleep(long milliseconds) {
+    public void sleep(long milliseconds) {
         try {
             Thread.sleep(milliseconds);
         } catch (InterruptedException e) {
@@ -281,7 +281,7 @@ public class AutoRed extends OpMode {
         }
     }
 
-    private double time(double DISTANCE_TO_MOVE_INCHES){
+    public double time(double DISTANCE_TO_MOVE_INCHES){
         double wheelCircumference = Math.PI * 3.779;
 
         double speedInchesPerSecond = (320 * wheelCircumference) / 60.0;
