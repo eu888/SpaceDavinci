@@ -13,13 +13,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp(name="Test")
-public class Teleop1 extends LinearOpMode{
+@TeleOp(name="TestNigger")
+public class testStuf extends LinearOpMode{
 
 
 
     DcMotor motorLB,motorLF,motorRB,motorRF,motorB, motorE;
-    Servo sr1, sr2, sr3;
+    Servo sr1, sr2, sr5;
     int limit = 1225;
 
     @Override
@@ -41,7 +41,7 @@ public class Teleop1 extends LinearOpMode{
 
         sr1 = hardwareMap.get(Servo.class, "sr1");
         sr2 = hardwareMap.get(Servo.class, "sr2");
-        sr3 = hardwareMap.get(Servo.class, "sr3");
+        sr5 = hardwareMap.get(Servo.class, "sr5");
 
         encoderRest();
 
@@ -61,7 +61,7 @@ public class Teleop1 extends LinearOpMode{
             telemetry.addData("Motor E", motorE.getCurrentPosition());
             telemetry.addData("Servo sr1", sr1.getPosition());
             telemetry.addData("Servo sr2", sr2.getPosition());
-            telemetry.addData("Servo sr3", sr3.getPosition());
+            telemetry.addData("Servo sr3", sr5.getPosition());
             telemetry.update();
 
             double lx = gamepad1.left_stick_x;
@@ -113,17 +113,17 @@ public class Teleop1 extends LinearOpMode{
             } else if (gamepad2.dpad_left) {
                 motorE.setPower(-0.5);//1284
             } else if (gamepad2.triangle) {
-                sr3.setPosition(1.0);
+                sr5.setPosition(0.499);//mare
             } else if(gamepad2.cross){
-                sr3.setPosition(0.0);
+                sr5.setPosition(0.555);//mare
             }  else if(gamepad2.square){
-                sr2.setPosition(0.5);
+                sr5.setPosition(0.53);//jos_rol
             } else if(gamepad2.circle){
-                sr2.setPosition(0.7);
+                sr5.setPosition(0.3);//all_cl
             } else if(gamepad2.left_trigger != 0){
-                sr3.setPosition(0.5);
+                sr5.setPosition(0.83);//brat
             } else if (gamepad2.right_trigger != 0) {
-                sr3.setPosition(0.2);
+                sr5.setPosition(0.0);//zero
             } else if(gamepad2.right_stick_button){
                 encoderRest();
             }

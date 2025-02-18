@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.auto;
 
+import static org.firstinspires.ftc.teamcode.autoversion2.lib.*;
+
 import androidx.annotation.NonNull;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.libsVersion1;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -15,7 +16,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-//import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -26,10 +27,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+
 
 @Autonomous(name="Auto3.2.4", group = "Red")
 public class AutoRed extends OpMode {
+    public int closestObjectId = -1;
+    public int relativeX;
+    public int relativeY;
     Mat hsv = new Mat();
     Mat mask1 = new Mat();
     Mat mask2 = new Mat();
@@ -41,6 +45,9 @@ public class AutoRed extends OpMode {
     private static final double MAX_DISTANCE = 50.0;
 
     DcMotor motorLB,motorLF,motorRB,motorRF,motorB, motorE;
+    DcMotor[] group1 = {motorLF, motorRB};
+    DcMotor[] group2 = {motorLB, motorRF};
+    DcMotor[] all = {motorRF, motorRB, motorLB, motorLF};
     Servo sr1, sr2;
     public void init() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -55,7 +62,7 @@ public class AutoRed extends OpMode {
             @Override
             public void onError(int errorCode) {}
         });
-//        FtcDashboard.getInstance().startCameraStream(webcam, 30);
+        FtcDashboard.getInstance().startCameraStream(webcam, 30);
         motorSetup();
     }
 
@@ -69,9 +76,6 @@ public class AutoRed extends OpMode {
     }
 
     class YellowObjectDetectionPipeline extends OpenCvPipeline   {
-        private int closestObjectId = -1;
-        private int relativeX;
-        private int relativeY;
         @Override
         public Mat processFrame(Mat input) {
             List<MatOfPoint> contours = new ArrayList<>();
@@ -118,6 +122,8 @@ public class AutoRed extends OpMode {
 
                 relativeX = objectCenterX - imageCenterX;
                 relativeY = objectCenterY - imageCenterY;
+
+                goToCenter(28);
 
                 double distance = Math.sqrt(Math.pow(objectCenterX - imageCenterX, 2) + Math.pow(objectCenterY - imageCenterY, 2));
 
@@ -195,6 +201,8 @@ public class AutoRed extends OpMode {
             }
             return updated;
         }
+
+
     }
 
     class TrackedObject {
@@ -261,32 +269,14 @@ public class AutoRed extends OpMode {
         telemetry.addData("Servo sr2", sr2.getPosition());
     }
 
-    public void runMotors(@NonNull DcMotor[] motors, double power){
-        for(DcMotor motor : motors){
-            motor.setPower(power);
+    public void goToCenter(int centerX){
+        if(relativeX < centerX){
+            move(group1, group2, 0.5, "left");
+        } else if (relativeX > centerX) {
+            move(group1, group2, 0.5, "right");
+        } else {
+            stopMotors(all);
         }
-    }
-
-    public void stopMotors(@NonNull DcMotor[] motors){
-        for(DcMotor motor : motors){
-            motor.setPower(0.0);
-        }
-    }
-
-    public void sleep(long milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public double time(double DISTANCE_TO_MOVE_INCHES){
-        double wheelCircumference = Math.PI * 3.779;
-
-        double speedInchesPerSecond = (320 * wheelCircumference) / 60.0;
-
-        return DISTANCE_TO_MOVE_INCHES / speedInchesPerSecond;
     }
 
 }

@@ -30,10 +30,10 @@ public class Drivetrain {
          * **/
 
         // Control HUb
-        topLeftDriveMotor = hwMap.get(DcMotor.class, "Top-Left-Motor");
-        bottomLeftDriveMotor = hwMap.get(DcMotor.class, "Bottom-Left-Motor");
-        topRightDriveMotor = hwMap.get(DcMotor.class, "Top-Right-Motor");
-        bottomRightDriveMotor = hwMap.get(DcMotor.class, "Bottom-Right-Motor");
+        topLeftDriveMotor = hwMap.get(DcMotor.class, "mlf");
+        bottomLeftDriveMotor = hwMap.get(DcMotor.class, "mlb");
+        topRightDriveMotor = hwMap.get(DcMotor.class, "mrf");
+        bottomRightDriveMotor = hwMap.get(DcMotor.class, "mrb");
 
 
         /**
