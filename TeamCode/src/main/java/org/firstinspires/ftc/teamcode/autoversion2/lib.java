@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 public class lib {
     public static void runMotors(@NonNull DcMotor[] motors, double power){
         for(DcMotor motor : motors){
@@ -60,6 +62,12 @@ public class lib {
         for(DcMotor motor : motors){
             motor.setPower(+power);
         }
+    }
+
+    public static void runByEncoder(@NonNull DcMotor motor,int target){
+        motor.setPower(0.5);
+        motor.setTargetPosition(target);
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 }
 

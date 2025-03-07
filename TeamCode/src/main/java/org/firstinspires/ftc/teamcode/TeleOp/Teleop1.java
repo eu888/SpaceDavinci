@@ -1,29 +1,38 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.PWMOutputImpl;
-import com.qualcomm.robotcore.hardware.PwmControl;
-//import com.qualcomm.robotcore.hardware.;
+import static org.firstinspires.ftc.teamcode.autoversion2.lib.*;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.sun.tools.javac.comp.Todo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp(name="Test")
+@Config
 public class Teleop1 extends LinearOpMode{
 
 
 
     DcMotor motorLB,motorLF,motorRB,motorRF,motorB, motorE;
-    Servo sr1, sr2, sr3;
-    int limit = 1225;
+    Servo sr1, sr2, sr3, sr4, sr5;
+    public static int target = 0;
+    public static double servomarein = 0.54255;
+    public static double servomareout = 0.4924;
+    public static double servobratjos = 0.79275;    FtcDashboard dashboard;
+
+    public static double servobratsus = 0;
 
     @Override
     public void runOpMode() throws InterruptedException{
+        dashboard = FtcDashboard.getInstance();
+
         motorRB = hardwareMap.get(DcMotor.class, "mrb");
         motorRF = hardwareMap.get(DcMotor.class, "mrf");
         motorLF = hardwareMap.get(DcMotor.class, "mlf");
@@ -36,14 +45,22 @@ public class Teleop1 extends LinearOpMode{
         motorLB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorLF.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorLB.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorRF.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorRB.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         sr1 = hardwareMap.get(Servo.class, "sr1");
         sr2 = hardwareMap.get(Servo.class, "sr2");
         sr3 = hardwareMap.get(Servo.class, "sr3");
+        sr4 = hardwareMap.get(Servo.class, "sr4");
+        sr5 = hardwareMap.get(Servo.class, "sr5");
 
-        encoderRest();
+        motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER );
+        target = 0;
+        motorB.setTargetPosition(target);
+        motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        encoderReset();
 
         IMU imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -72,69 +89,86 @@ public class Teleop1 extends LinearOpMode{
             rotX = rotX * 1.1;
             double rotY = lx * Math.sin(-botHeading) + ly * Math.cos(-botHeading);
             double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-            double LBPower = -((rotY - rotX + rx) / denominator) * 0.485;
-            double LFPower = -((rotY + rotX + rx) / denominator) * 0.485;
-            double RFPower = -((rotY - rotX - rx) / denominator) * 0.485;
-            double RBPower = -((rotY + rotX - rx) / denominator) * 0.485;
+            double LBPower = -((rotY - rotX - rx) / denominator) * 0.485;
+            double LFPower = -((rotY + rotX - rx) / denominator) * 0.485;
+            double RFPower = -((rotY - rotX + rx) / denominator) * 0.485;
+            double RBPower = -((rotY + rotX + rx) / denominator) * 0.485;
 
             if (gamepad1.options){
                 imu.resetYaw();
             }
 
-            motorRB.setPower(-(-lx+ly+rx)*0.5);
-            motorRF.setPower(-(lx+ly+rx)*0.5);
-            motorLF.setPower(-(-lx+ly-rx)*0.5);
-            motorLB.setPower(-(lx+ly-rx)*0.5);
+            motorRB.setPower(-(lx+ly-rx)*0.45);
+            motorRF.setPower(-(-lx+ly-rx)*0.45);
+            motorLF.setPower(-(lx+ly+rx)*0.45);
+            motorLB.setPower(-(-lx+ly+rx)*0.45);
             motorE.setPower(0.0);
-            motorB.setPower(0.0);
+            motorB.setTargetPosition(target);
+            motorB.setPower(0.7);
 
 
-
-            if (gamepad2.dpad_up) {
-                motorB.setPower(0.37);
-            } else if (gamepad2.dpad_down) {
-                if(motorE.getCurrentPosition() < limit){
-                    motorB.setPower(-0.37);
-                }else {
-                    motorB.setPower(0.0);
-                }
-            } else if (gamepad2.dpad_right) {
-                int motorBPosition = motorB.getCurrentPosition();
-
-                if (motorBPosition < -88) {
-                    if (motorE.getCurrentPosition() <= limit) {
-                        motorE.setPower(0.5);
-                    } else {
-                        motorE.setPower(0);
-                    }
-                } else {
-                    motorE.setPower(0.5);
-                }
-            } else if (gamepad2.dpad_left) {
-                motorE.setPower(-0.5);//1284
-            } else if (gamepad2.triangle) {
-                sr3.setPosition(1.0);
-            } else if(gamepad2.cross){
-                sr3.setPosition(0.0);
-            }  else if(gamepad2.square){
-                sr2.setPosition(0.5);
-            } else if(gamepad2.circle){
-                sr2.setPosition(0.7);
-            } else if(gamepad2.left_trigger != 0){
-                sr3.setPosition(0.5);
-            } else if (gamepad2.right_trigger != 0) {
-                sr3.setPosition(0.2);
-            } else if(gamepad2.right_stick_button){
-                encoderRest();
+            if(gamepad2.square){
+                target = -1900;
+                sr5.setPosition(0.51);
+                sr4.setPosition(0.1);
+                sr1.setPosition(0.6);
             }
+            if(gamepad2.circle){
+                sr5.setPosition(servomareout);
+                sleep(800);
+                sr4.setPosition(0.34);
+                sleep(250);
+                target = 0;
+                sr5.setPosition(servomarein);
+                sr3.setPosition(0.53);
+                sleep(1300);
+                sr1.setPosition(servobratjos);
+                sr2.setPosition(0.1);
+            }
+            if(gamepad2.triangle){
+                sr2.setPosition(0.34);
+                sleep(150);
+                sr4.setPosition(0.1);
+            }
+            if(gamepad2.cross){
+                sr1.setPosition(servobratsus);
+                sleep(1500);
+
+                sr2.setPosition(0.1);
+            }
+            if (gamepad2.dpad_left){
+                motorE.setPower(1);
+            }
+            if (gamepad2.dpad_right) {
+                motorE.setPower(-1);
+            }
+            if(gamepad2.left_bumper){
+                sr1.setPosition(servobratjos);
+            }
+            if (gamepad2.right_bumper){
+                sr1.setPosition(servobratsus);
+            }
+            if(gamepad2.right_trigger !=0 ){
+                sr3.setPosition(0.41);
+            }
+            if(gamepad2.left_trigger != 0){
+                sr3.setPosition(0.65);
+            }
+            if(gamepad2.right_bumper){
+                sr3.setPosition(0.53);
+            }
+            if(gamepad2.right_stick_button){
+                sr4.setPosition(0);
+            }
+
+            motorB.setTargetPosition(target);
+            motorB.setPower(0.75);
 
         }
     }
 
-    public void encoderRest(){
+    public void encoderReset(){
         motorE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorE.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }

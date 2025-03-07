@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp(name="TestNigger")
+@TeleOp(name="TestStuf")
 public class testStuf extends LinearOpMode{
 
 
@@ -113,7 +113,7 @@ public class testStuf extends LinearOpMode{
             } else if (gamepad2.dpad_left) {
                 motorE.setPower(-0.5);//1284
             } else if (gamepad2.triangle) {
-                sr5.setPosition(0.499);//mare
+                sr2.setPosition(0.0);//mare
             } else if(gamepad2.cross){
                 sr5.setPosition(0.555);//mare
             }  else if(gamepad2.square){
@@ -123,7 +123,7 @@ public class testStuf extends LinearOpMode{
             } else if(gamepad2.left_trigger != 0){
                 sr5.setPosition(0.83);//brat
             } else if (gamepad2.right_trigger != 0) {
-                sr5.setPosition(0.0);//zero
+                sr1.setPosition(0.0);//zero
             } else if(gamepad2.right_stick_button){
                 encoderRest();
             }
