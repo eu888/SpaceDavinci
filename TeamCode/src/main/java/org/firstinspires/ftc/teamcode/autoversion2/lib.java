@@ -3,10 +3,13 @@ package org.firstinspires.ftc.teamcode.autoversion2;
 import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.IMU;
+
+import org.firstinspires.ftc.ftccommon.internal.manualcontrol.parameters.ImuParameters;
 
 import java.util.Objects;
 
-import javax.annotation.Nullable;
+//import javax.annotation.Nullable;
 
 public class lib {
     public static void runMotors(@NonNull DcMotor[] motors, double power){
@@ -69,5 +72,10 @@ public class lib {
         motor.setTargetPosition(target);
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
+
+    public static void imuInit(@NonNull IMU imu, IMU.Parameters parameters){
+        imu.initialize(parameters);
+    }
+
 }
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.autoversion2;
 
 import static org.firstinspires.ftc.teamcode.autoversion2.lib.*;
 
