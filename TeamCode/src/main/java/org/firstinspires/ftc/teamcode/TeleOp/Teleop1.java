@@ -19,12 +19,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 public class Teleop1 extends LinearOpMode{
     @Override
     public void runOpMode(){
-        DcMotor motorRB, motorRF, motorLF, motorLB;
+        DcMotor motorRB, motorRF, motorLF, motorLB, motorBR1, motorBR2;
 
         motorRB = hardwareMap.get(DcMotor.class, "mrb");
         motorRF = hardwareMap.get(DcMotor.class, "mrf");
         motorLF = hardwareMap.get(DcMotor.class, "mlf");
         motorLB = hardwareMap.get(DcMotor.class, "mlb");
+        motorBR1 = hardwareMap.get(DcMotor.class,"par0");
+        motorBR2 = hardwareMap.get(DcMotor.class,"mbr");
 
         motorRF.setDirection(DcMotorSimple.Direction.REVERSE);
         motorRB.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -46,7 +48,15 @@ public class Teleop1 extends LinearOpMode{
         while (opModeIsActive()){
             if (gamepad1.options) {
                 imu.resetYaw();
+            } else if (gamepad1.dpad_down) {
+                motorBR2.setPower(-1);
+                motorBR1.setPower(-1);
+            } else if (gamepad1.dpad_up) {
+                motorBR2.setPower(1);
+                motorBR1.setPower(1);
             }
+            motorBR2.setPower(0);
+            motorBR1.setPower(0);
 
             double lx = gamepad1.left_stick_x, ly = -gamepad1.right_stick_x, rx = gamepad1.left_stick_y;
             double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
