@@ -4,10 +4,11 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.TankDrive;
 
+@TeleOp(name = "movTest")
 public final class testAuto extends LinearOpMode{
     @Override
     public void runOpMode(){
@@ -16,10 +17,8 @@ public final class testAuto extends LinearOpMode{
 
         waitForStart();
 
-        Actions.runBlocking(drive.actionBuilder(beginigPose)
-                            lineTo(new Vector2d(30, 0)) 
-                            .turn(Math.toRadians(90))
-                            .lineTo(new Vector2d(30, 30)) 
-                            .build());
+        Actions.runBlocking(drive.actionBuilder(beginPose)
+                .lineToX(30)
+                .build());
     }
 }
