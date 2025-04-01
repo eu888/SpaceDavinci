@@ -8,8 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
-
-import static org.firstinspires.ftc.teamcode.autoversion2.lib.*;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -19,7 +18,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 public class Teleop1 extends LinearOpMode{
     @Override
     public void runOpMode(){
-        DcMotor motorRB, motorRF, motorLF, motorLB, motorBR1, motorBR2;
+        DcMotor motorRB, motorRF, motorLF, motorLB, motorBR1, motorBR2, armL, armR;
+        DigitalChannel limitBtn;
+        boolean isRunning = false;
 
         motorRB = hardwareMap.get(DcMotor.class, "mrb");
         motorRF = hardwareMap.get(DcMotor.class, "mrf");
@@ -27,6 +28,11 @@ public class Teleop1 extends LinearOpMode{
         motorLB = hardwareMap.get(DcMotor.class, "mlb");
         motorBR1 = hardwareMap.get(DcMotor.class,"par0");
         motorBR2 = hardwareMap.get(DcMotor.class,"mbr");
+        armL = hardwareMap.get(DcMotor.class, "par1");
+        armR = hardwareMap.get(DcMotor.class, "perp");
+
+        armL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        armR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motorRF.setDirection(DcMotorSimple.Direction.REVERSE);
         motorRB.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -35,6 +41,9 @@ public class Teleop1 extends LinearOpMode{
         motorLF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        limitBtn = hardwareMap.get(DigitalChannel.class, "limitBtn");
+        limitBtn.setMode(DigitalChannel.Mode.INPUT);
 
         IMU imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -46,6 +55,9 @@ public class Teleop1 extends LinearOpMode{
         waitForStart();
         if (isStopRequested()) return;
         while (opModeIsActive()){
+            boolean isNotPressed = limitBtn.getState();
+            telemetry.addData("Brat retras", isNotPressed);
+            telemetry.update();
             if (gamepad1.options) {
                 imu.resetYaw();
             } else if (gamepad1.dpad_down) {
@@ -54,9 +66,24 @@ public class Teleop1 extends LinearOpMode{
             } else if (gamepad1.dpad_up) {
                 motorBR2.setPower(1);
                 motorBR1.setPower(1);
+            } else if (gamepad2.dpad_left){
+                armR.setPower(1);
+                armL.setPower(1);
+            } else if (gamepad2.dpad_right){
+                armR.setPower(-1);
+                armL.setPower(-1);
+            } else if (gamepad2.triangle && !isRunning){
+                isRunning = true;
+            } else if (!isNotPressed){
+                isRunning = false;
+            } else if (isRunning) {
+                armR.setPower(1);
+                armL.setPower(1);
             }
             motorBR2.setPower(0);
             motorBR1.setPower(0);
+            armL.setPower(0);
+            armR.setPower(0);
 
             double lx = gamepad1.left_stick_x, ly = -gamepad1.right_stick_x, rx = gamepad1.left_stick_y;
             double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
