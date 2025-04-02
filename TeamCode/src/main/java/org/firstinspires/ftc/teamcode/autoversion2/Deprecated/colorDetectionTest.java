@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autoversion2;
+package org.firstinspires.ftc.teamcode.autoversion2.Deprecated;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.firstinspires.ftc.teamcode.autoversion2.pipelineBlueTest;
 
+@Deprecated
 @TeleOp(name="Color Test")
 public class colorDetectionTest extends LinearOpMode{
     FtcDashboard dashboard = FtcDashboard.getInstance();

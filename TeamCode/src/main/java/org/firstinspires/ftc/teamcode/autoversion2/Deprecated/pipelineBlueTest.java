@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autoversion2;
+package org.firstinspires.ftc.teamcode.autoversion2.Deprecated;
 
 import com.acmerobotics.dashboard.config.Config;
 import org.opencv.core.Core;
@@ -8,6 +8,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+@Deprecated
 @Config
 public class pipelineBlueTest extends OpenCvPipeline{
     Mat hsvImage = new Mat();
