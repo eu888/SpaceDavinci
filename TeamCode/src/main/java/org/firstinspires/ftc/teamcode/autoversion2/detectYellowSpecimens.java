@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.autoversion2;
 
-import android.nfc.tech.Ndef;
-
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -18,7 +15,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.List;
 import static org.firstinspires.ftc.teamcode.autoversion2.robotData.*;
 @Autonomous(name = "Yellow Detect Test")
-public class detectYellowSpeciments extends LinearOpMode {
+public class detectYellowSpecimens extends LinearOpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     OpenCvCamera webcam;
     yellowPipeline pipeline;
