@@ -76,7 +76,7 @@ public final class MecanumDrive {
         public double kV = 0.000492728194446075;
         public double kA = 0.000111;
 
-        public double maxWheelVel = 100;
+        public double maxWheelVel = 50;
         public double minProfileAccel = -30;
         public double maxProfileAccel = 50;
 
