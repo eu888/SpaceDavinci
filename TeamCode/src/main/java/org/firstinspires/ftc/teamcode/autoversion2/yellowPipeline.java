@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.autoversion2;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.autoversion2.robotData.*;
+import android.annotation.SuppressLint;
+
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
@@ -11,10 +13,10 @@ import java.util.List;
  * The pipeline for yellow samples.
  */
 public class yellowPipeline extends OpenCvPipeline {
-    private Mat hsvImage = new Mat();
-    private Mat yellowMask = new Mat();
-    private Mat morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3));
-    private List<MatOfPoint> contours = new ArrayList<>();
+    private final Mat hsvImage = new Mat();
+    private final Mat yellowMask = new Mat();
+    private final Mat morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3));
+    private final List<MatOfPoint> contours = new ArrayList<>();
     private final int frameWidth;
     private final int frameHeight;
     private final double cameraFOV;
@@ -41,8 +43,8 @@ public class yellowPipeline extends OpenCvPipeline {
      * @param input the camera feed that will be processed
      * @return The annotated input image with detected contours, angles, distances, and straight-ahead status of the yellow objects.
      * @throws IllegalArgumentException if the input image is null or not properly initialized.
-     * @throws Exception if any unexpected error occurs during processing.
      */
+    @SuppressLint("DefaultLocale")
     @Override
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input, hsvImage, Imgproc.COLOR_RGB2HSV);
@@ -118,5 +120,15 @@ public class yellowPipeline extends OpenCvPipeline {
      */
     public List<MatOfPoint> getContours() {
         return contours;
+    }
+
+    /**
+     * Get <code>frameHeight</code>
+     * @deprecated Is No longer used and planed for future removal.
+     * @return <code>frameHeight</code>
+     */
+    @Deprecated
+    public int getFrameHeight() {
+        return frameHeight;
     }
 }

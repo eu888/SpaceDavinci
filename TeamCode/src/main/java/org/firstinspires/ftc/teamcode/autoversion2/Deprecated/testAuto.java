@@ -1,12 +1,19 @@
-package org.firstinspires.ftc.teamcode.autoversion2;
+package org.firstinspires.ftc.teamcode.autoversion2.Deprecated;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
+/**
+ * This was a test <code>OpMode</code> to try and make an Auto with <code>RoadRunner 1.0</code>
+ * @deprecated This will be removed in future.
+ */
+@Deprecated
+@Disabled
 @TeleOp(name = "movTest")
 public final class testAuto extends LinearOpMode{
     @Override

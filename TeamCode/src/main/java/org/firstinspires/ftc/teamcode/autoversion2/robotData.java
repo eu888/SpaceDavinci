@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.autoversion2;
-
 import com.acmerobotics.dashboard.config.Config;
-
 import org.opencv.core.Scalar;
-
+/**
+ * The constants for the robot.
+ */
 @Config
 public final class robotData {
     /**

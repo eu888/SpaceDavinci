@@ -14,6 +14,9 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.List;
 import static org.firstinspires.ftc.teamcode.autoversion2.robotData.*;
+
+import androidx.annotation.NonNull;
+
 @Autonomous(name = "Yellow Detect Test")
 public class detectYellowSpecimens extends LinearOpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -46,19 +49,28 @@ public class detectYellowSpecimens extends LinearOpMode {
 
         while (opModeIsActive()) {
             List<MatOfPoint> detectContours = pipeline.getContours();
-
-            if (pipeline.straightAheadCount == 0) {
-                Actions.runBlocking(drive.actionBuilder(beginPose)
-                        .strafeTo(new Vector2d(beginPose.position.x, beginPose.position.y + moveDistance1))
-                        .build());
-            }    else {
-                Actions.runBlocking(drive.actionBuilder(beginPose).endTrajectory().build());
-                break;
-            }
+            alightToSample(pipeline, drive, beginPose);
 
             telemetry.addData("Samples Detected", pipeline.getContours().size());
             telemetry.addData("Straight Ahead Count", pipeline.straightAheadCount);
             telemetry.update();
+        }
+    }
+
+    /**
+     * Alight to a sample
+     * <p>Here you need a pipeline that can count the objects strait in front</p>
+     * @param pipeline your pipeline
+     * @param drive the mecanum drive class
+     * @param pose the position to start the search
+     */
+    private static void alightToSample(@NonNull yellowPipeline pipeline, MecanumDrive drive, Pose2d pose){
+        if (pipeline.straightAheadCount == 0) {
+            Actions.runBlocking(drive.actionBuilder(pose)
+                    .strafeTo(new Vector2d(pose.position.x, pose.position.y + moveDistance1))
+                    .build());
+        }    else {
+            Actions.runBlocking(drive.actionBuilder(pose).endTrajectory().build());
         }
     }
 }
