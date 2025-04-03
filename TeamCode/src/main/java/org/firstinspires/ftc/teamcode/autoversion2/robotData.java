@@ -5,7 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import org.opencv.core.Scalar;
 
 @Config
-public class robotData {
+public final class robotData {
     /**
      * Global setting for camera.
      */
@@ -15,7 +15,7 @@ public class robotData {
     public static final double FOCAL_LENGTH = 700;
 
     /**
-     * Global setings for the pipelines
+     * Global settings for the pipelines
      */
     public static final double OBJECT_HEIGHT = 8.5;
     public static final double POSITION_TOLERANCE = 5.0;
@@ -31,5 +31,13 @@ public class robotData {
      * Movement Settings for Autonomous
      * **/
     public static final double moveDistance1 = 7;
+    /**
+     * Servo positions
+     */
+    public static final double SERVO_CLAW_CLOSED = 0.0;
+    public static final double SERVO_CLAW_OPEN = 0.45;
+    public static final double SERVO_LOWER_ARM_IN = 0;
+    public static final double SERVO_LOWER_ARM_MEDIUM_OUT = 0.5;
+    public static final double SERVO_LOWER_ARM_OUT = 1;
 
 }

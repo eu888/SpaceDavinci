@@ -7,7 +7,9 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * The pipeline for yellow samples.
+ */
 public class yellowPipeline extends OpenCvPipeline {
     private Mat hsvImage = new Mat();
     private Mat yellowMask = new Mat();
@@ -18,14 +20,29 @@ public class yellowPipeline extends OpenCvPipeline {
     private final double cameraFOV;
     private final double offset;
     public int straightAheadCount = 0;
-
+    /**
+     * Parameters of the camera. All declare in <code>org.firstinspires.ftc.teamcode.autoversion2.robotData</code>.
+     * @param frameWidth the width of the camera in <code>pixels</code>.
+     * @param frameHeight the height of the camera in <code>pixels</code>.
+     * @param cameraFOV the FOV of the camera.
+     * @param offset the offset of the camera to the center of the robot <code>degrees</code>(°).
+     */
     public yellowPipeline(int frameWidth, int frameHeight, double cameraFOV, double offset) {
         this.frameWidth = frameWidth;
         this.frameHeight = frameHeight;
         this.cameraFOV = cameraFOV;
         this.offset = offset;
     }
-
+    /**
+     * The main process object detection and annotating the results on the the frame
+     * <p>Here separates the yellow objects and does morphological operation to reduce the noise and clean the mask.
+     * It finds the contours and removes smaller ones based on a minim threshold. It then annotates the results
+     * near the sample.</p>
+     * @param input the camera feed that will be processed
+     * @return The annotated input image with detected contours, angles, distances, and straight-ahead status of the yellow objects.
+     * @throws IllegalArgumentException if the input image is null or not properly initialized.
+     * @throws Exception if any unexpected error occurs during processing.
+     */
     @Override
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input, hsvImage, Imgproc.COLOR_RGB2HSV);
@@ -60,27 +77,45 @@ public class yellowPipeline extends OpenCvPipeline {
         }
         return input;
     }
-
+    /**
+     * Logs data based on samples detected
+     * @deprecated is no longer used and is planed to be remove in future
+     */
     @Deprecated
     public void logTelemetry() {
         telemetry.addData("Samples in front: ", straightAheadCount);
         telemetry.update();
     }
-
+    /**
+     * Here it calculates the angel between the sample and camera
+     * @param objectX is the horizontal size of the sample
+     * @return the angle in degrees
+     */
     private double calculateAngle(double objectX) {
         double centerX = frameWidth / 2.0;
         double anglePerPixel = cameraFOV / frameWidth;
         return (objectX - centerX) * anglePerPixel;
     }
-
+    /**
+     * based of the angle of the samples it determines if it is forward and in the range of tolerance and there can be added an offset
+     * @param angle the angel between the camera and sample
+     * @return if it is in front or not
+     */
     private boolean isObjectStraightAhead(double angle) {
         return Math.abs(angle) <= offset + POSITION_TOLERANCE;
     }
-
+    /**
+     * Calculates the distance from the camera to the object
+     * @param objectPixelHeight the height of the object in pixels
+     * @return the distance in <code>cm</code>
+     */
     private double calculateDistance(double objectPixelHeight) {
         return (OBJECT_HEIGHT * FOCAL_LENGTH) / objectPixelHeight;
     }
-
+    /**
+     * Get contours
+     * @return <code>contours</code>
+     */
     public List<MatOfPoint> getContours() {
         return contours;
     }
