@@ -6,6 +6,8 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.opencv.core.*;
@@ -22,9 +24,14 @@ public class detectYellowSpecimens extends LinearOpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     OpenCvCamera webcam;
     yellowPipeline pipeline;
+    DcMotor motorRB, motorRF, motorLF, motorLB;
 
     @Override
     public void runOpMode() {
+        motorRB = hardwareMap.get(DcMotor.class, "mrb");
+        motorRF = hardwareMap.get(DcMotor.class, "mrf");
+        motorLF = hardwareMap.get(DcMotor.class, "mlf");
+        motorLB = hardwareMap.get(DcMotor.class, "mlb");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         pipeline = new yellowPipeline(CAMERA_WIDTH, CAMERA_HEIGHT, CAMERA_FOV, 0);
@@ -49,7 +56,18 @@ public class detectYellowSpecimens extends LinearOpMode {
 
         while (opModeIsActive()) {
             List<MatOfPoint> detectContours = pipeline.getContours();
-            alightToSample(pipeline, drive, beginPose);
+            if (pipeline.straightAheadCount == 0) {
+                motorRB.setPower(-0.2);
+                motorRF.setPower(0.2);
+                motorLF.setPower(-0.2);
+                motorLB.setPower(0.2);
+            }    else {
+                motorRB.setPower(0.0);
+                motorRF.setPower(0.0);
+                motorLF.setPower(0.0);
+                motorLB.setPower(0.0);
+                return;
+            }
 
             telemetry.addData("Samples Detected", pipeline.getContours().size());
             telemetry.addData("Straight Ahead Count", pipeline.straightAheadCount);
@@ -61,16 +79,19 @@ public class detectYellowSpecimens extends LinearOpMode {
      * Alight to a sample
      * <p>Here you need a pipeline that can count the objects strait in front</p>
      * @param pipeline your pipeline
-     * @param drive the mecanum drive class
-     * @param pose the position to start the search
      */
-    private static void alightToSample(@NonNull yellowPipeline pipeline, MecanumDrive drive, Pose2d pose){
+    private void alightToSample(@NonNull yellowPipeline pipeline){
         if (pipeline.straightAheadCount == 0) {
-            Actions.runBlocking(drive.actionBuilder(pose)
-                    .strafeTo(new Vector2d(pose.position.x, pose.position.y + moveDistance1))
-                    .build());
+            motorRB.setPower(-0.2);
+            motorRF.setPower(0.2);
+            motorLF.setPower(-0.2);
+            motorLB.setPower(0.2);
         }    else {
-            Actions.runBlocking(drive.actionBuilder(pose).endTrajectory().build());
+            motorRB.setPower(0.0);
+            motorRF.setPower(0.0);
+            motorLF.setPower(0.0);
+            motorLB.setPower(0.0);
+            return;
         }
     }
 }
