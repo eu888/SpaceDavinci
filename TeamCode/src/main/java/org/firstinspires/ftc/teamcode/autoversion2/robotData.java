@@ -34,12 +34,15 @@ public final class robotData {
     /**
      * Servo positions
      */
-    public static final double SERVO_CLAW_CLOSED = 0.0;
-    public static final double SERVO_CLAW_OPEN = 0.45;
+    public static final double SERVO_CLAW_CLOSED = 1.0;
+    public static final double SERVO_CLAW_OPEN = 0.69;
+
     public static final double SERVO_LOWER_ARM_IN = 0;
     public static final double SERVO_LOWER_ARM_MEDIUM_OUT = 0.7;
     public static final double SERVO_LOWER_ARM_OUT = 1;
     public static final double SERVO_UPPER_ARM_OUT = 0;
     public static final double SERVO_UPPER_ARM_IN = 1;
+    public static final double SERVO_UPPER_CLAW_OPEN = 0.69;
+    public static final double SERVO_UPPER_CLAW_CLOSED = 1;
 
 }

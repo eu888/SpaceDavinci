@@ -80,15 +80,6 @@ public class yellowPipeline extends OpenCvPipeline {
         return input;
     }
     /**
-     * Logs data based on samples detected
-     * @deprecated is no longer used and is planed to be remove in future
-     */
-    @Deprecated
-    public void logTelemetry() {
-        telemetry.addData("Samples in front: ", straightAheadCount);
-        telemetry.update();
-    }
-    /**
      * Here it calculates the angel between the sample and camera
      * @param objectX is the horizontal size of the sample
      * @return the angle in degrees

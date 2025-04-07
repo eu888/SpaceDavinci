@@ -57,10 +57,10 @@ public class detectYellowSpecimens extends LinearOpMode {
         while (opModeIsActive()) {
             List<MatOfPoint> detectContours = pipeline.getContours();
             if (pipeline.straightAheadCount == 0) {
-                motorRB.setPower(-0.2);
-                motorRF.setPower(0.2);
-                motorLF.setPower(-0.2);
-                motorLB.setPower(0.2);
+                motorRB.setPower(0.2);
+                motorRF.setPower(-0.2);
+                motorLF.setPower(0.2);
+                motorLB.setPower(-0.2);
             }    else {
                 motorRB.setPower(0.0);
                 motorRF.setPower(0.0);
