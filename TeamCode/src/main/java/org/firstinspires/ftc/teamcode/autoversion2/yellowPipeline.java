@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.autoversion2;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.autoversion2.robotData.*;
 import android.annotation.SuppressLint;
-
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;

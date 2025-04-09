@@ -1,20 +1,13 @@
 package org.firstinspires.ftc.teamcode.autoversion2;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.opencv.core.*;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import java.util.List;
 import static org.firstinspires.ftc.teamcode.autoversion2.robotData.*;
 
 import androidx.annotation.NonNull;
@@ -49,13 +42,10 @@ public class detectYellowSpecimens extends LinearOpMode {
             }
         });
         dashboard.startCameraStream(webcam, 30);
-        Pose2d beginPose = new Pose2d(0, 0, 0);
-        MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
         waitForStart();
 
         while (opModeIsActive()) {
-            List<MatOfPoint> detectContours = pipeline.getContours();
             if (pipeline.straightAheadCount == 0) {
                 motorRB.setPower(0.2);
                 motorRF.setPower(-0.2);
@@ -78,9 +68,10 @@ public class detectYellowSpecimens extends LinearOpMode {
     /**
      * Alight to a sample
      * <p>Here you need a pipeline that can count the objects strait in front</p>
-     * @param pipeline your pipeline
+     * @param pipeline your pipeline.
      */
-    private void alightToSample(@NonNull yellowPipeline pipeline){
+    @Deprecated
+    public void alightToSample(@NonNull yellowPipeline pipeline){
         if (pipeline.straightAheadCount == 0) {
             motorRB.setPower(-0.2);
             motorRF.setPower(0.2);
@@ -91,7 +82,6 @@ public class detectYellowSpecimens extends LinearOpMode {
             motorRF.setPower(0.0);
             motorLF.setPower(0.0);
             motorLB.setPower(0.0);
-            return;
         }
     }
 }

@@ -26,11 +26,6 @@ public final class robotData {
      */
     public static final Scalar LOWER_YELLOW = new Scalar(15, 80, 80);
     public static final Scalar UPPER_YELLOW = new Scalar(35, 255, 255);
-
-    /**
-     * Movement Settings for Autonomous
-     * **/
-    public static final double moveDistance1 = 7;
     /**
      * Servo positions
      */
@@ -40,7 +35,7 @@ public final class robotData {
     public static final double SERVO_LOWER_ARM_IN = 0;
     public static final double SERVO_LOWER_ARM_MEDIUM_OUT = 0.7;
     public static final double SERVO_LOWER_ARM_OUT = 1;
-    public static final double SERVO_UPPER_ARM_OUT = 0;
+//    public static final double SERVO_UPPER_ARM_OUT = 0;
     public static final double SERVO_UPPER_ARM_IN = 1;
     public static final double SERVO_UPPER_CLAW_OPEN = 0.69;
     public static final double SERVO_UPPER_CLAW_CLOSED = 1;
