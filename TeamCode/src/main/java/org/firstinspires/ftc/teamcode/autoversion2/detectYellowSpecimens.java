@@ -1,30 +1,28 @@
 package org.firstinspires.ftc.teamcode.autoversion2;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import static org.firstinspires.ftc.teamcode.autoversion2.robotData.*;
-
-import androidx.annotation.NonNull;
 
 @Autonomous(name = "Yellow Detect Test")
 public class detectYellowSpecimens extends LinearOpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     OpenCvCamera webcam;
     yellowPipeline pipeline;
-    DcMotor motorRB, motorRF, motorLF, motorLB;
+    Pose2d startPose = new Pose2d(12, -72, Math.toRadians(90));
 
     @Override
     public void runOpMode() {
-        motorRB = hardwareMap.get(DcMotor.class, "mrb");
-        motorRF = hardwareMap.get(DcMotor.class, "mrf");
-        motorLF = hardwareMap.get(DcMotor.class, "mlf");
-        motorLB = hardwareMap.get(DcMotor.class, "mlb");
+        MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startPose);
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         pipeline = new yellowPipeline(CAMERA_WIDTH, CAMERA_HEIGHT, CAMERA_FOV, 0);
@@ -44,44 +42,12 @@ public class detectYellowSpecimens extends LinearOpMode {
         dashboard.startCameraStream(webcam, 30);
 
         waitForStart();
+        Actions.runBlocking(mecanumDrive.actionBuilder(startPose)
+                .lineToY(-50).lineToXConstantHeading(0)
+                .lineToY(-72)
+                .build());
 
-        while (opModeIsActive()) {
-            if (pipeline.straightAheadCount == 0) {
-                motorRB.setPower(0.2);
-                motorRF.setPower(-0.2);
-                motorLF.setPower(0.2);
-                motorLB.setPower(-0.2);
-            }    else {
-                motorRB.setPower(0.0);
-                motorRF.setPower(0.0);
-                motorLF.setPower(0.0);
-                motorLB.setPower(0.0);
-                return;
-            }
 
-            telemetry.addData("Samples Detected", pipeline.getContours().size());
-            telemetry.addData("Straight Ahead Count", pipeline.straightAheadCount);
-            telemetry.update();
-        }
-    }
 
-    /**
-     * Alight to a sample
-     * <p>Here you need a pipeline that can count the objects strait in front</p>
-     * @param pipeline your pipeline.
-     */
-    @Deprecated
-    public void alightToSample(@NonNull yellowPipeline pipeline){
-        if (pipeline.straightAheadCount == 0) {
-            motorRB.setPower(-0.2);
-            motorRF.setPower(0.2);
-            motorLF.setPower(-0.2);
-            motorLB.setPower(0.2);
-        }    else {
-            motorRB.setPower(0.0);
-            motorRF.setPower(0.0);
-            motorLF.setPower(0.0);
-            motorLB.setPower(0.0);
-        }
     }
 }

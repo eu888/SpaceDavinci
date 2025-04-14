@@ -27,7 +27,7 @@ public class Teleop1 extends LinearOpMode{
      */
     DigitalChannel limitBtn;
     Servo servoLowerArm, servoLowerClaw, servoRol, servoUpperArm, servoUpperArmRol, servoUpperClaw;
-    DcMotor motorRB, motorRF, motorLF, motorLB, motorBR1, motorBR2, armL, armR;
+    DcMotor motorRB, motorRF, motorLF, motorLB, motorBR1, motorBR2,armL, armR;
     @Override
     public void runOpMode() {
         /// Here we define in witch ports we connect our devices
@@ -74,18 +74,19 @@ public class Teleop1 extends LinearOpMode{
             telemetry.addData("Brat ticks", motorBR2.getCurrentPosition());
             telemetry.update();
             /// Values for control using roadrunner
-            double drives = -gamepad1.left_stick_y*Speed;
-            double strafe = -gamepad1.left_stick_x*Speed;
-            double turn = -gamepad1.right_stick_x*Speed;
+            double drives = -gamepad2.left_stick_y*Speed;
+            double strafe = -gamepad2.left_stick_x*Speed;
+            double turn = -gamepad2.right_stick_x*Speed;
             drive.setDrivePowers(new PoseVelocity2d(new Vector2d(drives, strafe), turn));
             /// The controls of the main lift
             if (gamepad2.triangle) {
-                motorBR1.setPower(1);
-                motorBR2.setPower(1);
+                servoLowerClaw.setPosition(SERVO_CLAW_CLOSED);
+                waitFor(200);
+                servoUpperClaw.setPosition(SERVO_UPPER_CLAW_OPEN);
                 /* targetUpperLift = 0; */
             } else if (gamepad2.circle) {
-                motorBR1.setPower(-1);
-                motorBR2.setPower(-1);
+                motorBR1.setPower(0);
+                motorBR2.setPower(0);
                 /* targetUpperLift = 500; */
             }
             /// The controls for the horizontal arm
@@ -145,8 +146,8 @@ public class Teleop1 extends LinearOpMode{
                     motorBR1.setPower(1);
                 }
             }*/
-            motorBR1.setPower(0.03);
-            motorBR2.setPower(0.03);
+            motorBR1.setPower(0.0);
+            motorBR2.setPower(0.0);
             armL.setPower(0);
             armR.setPower(0);
 
