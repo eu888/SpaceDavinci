@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.autoversion2.Deprecated;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -24,7 +28,16 @@ public final class testAuto extends LinearOpMode{
         waitForStart();
 
         Actions.runBlocking(drive.actionBuilder(beginPose)
-                .lineToX(30)
+                .lineToY(30)
                 .build());
+    }
+
+
+    public static class retragere implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket){
+            return false;
+        }
     }
 }

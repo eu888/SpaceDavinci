@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autoversion2;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -16,8 +17,8 @@ import static org.firstinspires.ftc.teamcode.autoversion2.robotData.*;
 public class detectYellowSpecimens extends LinearOpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     OpenCvCamera webcam;
-    yellowPipeline pipeline;
-    Pose2d startPose = new Pose2d(12, -72, Math.toRadians(90));
+    yellowPipelineT pipeline;
+    Pose2d startPose = new Pose2d(-12, -72, Math.toRadians(90));
 
     @Override
     public void runOpMode() {
@@ -25,7 +26,7 @@ public class detectYellowSpecimens extends LinearOpMode {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        pipeline = new yellowPipeline(CAMERA_WIDTH, CAMERA_HEIGHT, CAMERA_FOV, 0);
+        pipeline = new yellowPipelineT(CAMERA_WIDTH, CAMERA_HEIGHT, CAMERA_FOV, 0);
         webcam.setPipeline(pipeline);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -43,8 +44,8 @@ public class detectYellowSpecimens extends LinearOpMode {
 
         waitForStart();
         Actions.runBlocking(mecanumDrive.actionBuilder(startPose)
-                .lineToY(-50).lineToXConstantHeading(0)
-                .lineToY(-72)
+                .lineToY(-60).splineToConstantHeading(new Vector2d(-55,-60),Math.toRadians(90))
+                .turn(Math.toRadians(-45))
                 .build());
 
 

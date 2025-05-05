@@ -1,16 +1,31 @@
 package org.firstinspires.ftc.teamcode.autoversion2;
 
-import static org.firstinspires.ftc.teamcode.autoversion2.robotData.*;
+import static org.firstinspires.ftc.teamcode.autoversion2.robotData.FOCAL_LENGTH;
+import static org.firstinspires.ftc.teamcode.autoversion2.robotData.LOWER_YELLOW;
+import static org.firstinspires.ftc.teamcode.autoversion2.robotData.MIN_CONTOUR_AREA;
+import static org.firstinspires.ftc.teamcode.autoversion2.robotData.OBJECT_HEIGHT;
+import static org.firstinspires.ftc.teamcode.autoversion2.robotData.POSITION_TOLERANCE;
+import static org.firstinspires.ftc.teamcode.autoversion2.robotData.UPPER_YELLOW;
+
 import android.annotation.SuppressLint;
-import org.opencv.core.*;
+
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
+
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * The pipeline for yellow samples.
  */
-public class yellowPipeline extends OpenCvPipeline {
+public class yellowPipelineT extends OpenCvPipeline {
     private final Mat hsvImage = new Mat();
     private final Mat yellowMask = new Mat();
     private final Mat morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3));
@@ -27,7 +42,7 @@ public class yellowPipeline extends OpenCvPipeline {
      * @param cameraFOV the FOV of the camera.
      * @param offset the offset of the camera to the center of the robot <code>degrees</code>(°).
      */
-    public yellowPipeline(int frameWidth, int frameHeight, double cameraFOV, double offset) {
+    public yellowPipelineT(int frameWidth, int frameHeight, double cameraFOV, double offset) {
         this.frameWidth = frameWidth;
         this.frameHeight = frameHeight;
         this.cameraFOV = cameraFOV;
