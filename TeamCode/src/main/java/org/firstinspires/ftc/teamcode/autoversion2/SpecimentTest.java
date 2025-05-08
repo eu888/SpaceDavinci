@@ -3,36 +3,23 @@ package org.firstinspires.ftc.teamcode.autoversion2;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Trajectory;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
-
 import org.firstinspires.ftc.teamcode.AutoVersion3.yellowPipeline;
-import org.firstinspires.ftc.teamcode.AutoVersion3.yellowPipeline.*;
-
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.opencv.core.*;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
-import org.openftc.easyopencv.OpenCvPipeline;
-
-import java.util.List;
 import static org.firstinspires.ftc.teamcode.autoversion2.robotData.*;
-
-import androidx.annotation.NonNull;
 
 /**
  * Autonomous
  */
-@Autonomous(name = "Autonomous")
+@Autonomous(name = "AutonomousAss")
 public class SpecimentTest extends LinearOpMode{
     FtcDashboard dashboard = FtcDashboard.getInstance();
     yellowPipeline pipeline = new yellowPipeline();
@@ -44,7 +31,6 @@ public class SpecimentTest extends LinearOpMode{
     @Override
     public void runOpMode(){
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
-        DigitalChannel limitBtn;
 
         motorRB = hardwareMap.get(DcMotor.class, "mrb");
         motorRF = hardwareMap.get(DcMotor.class, "mrf");
@@ -58,7 +44,6 @@ public class SpecimentTest extends LinearOpMode{
         servoUpperArm = hardwareMap.get(Servo.class, "servoUpperArm");
         servoUpperArmRol = hardwareMap.get(Servo.class, "servoUpperArmRol");
         servoUpperClaw = hardwareMap.get(Servo.class, "servoUpperClaw");
-        limitBtn = hardwareMap.get(DigitalChannel.class, "limitBtn");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("Webcam1", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         webcam.setPipeline(pipeline);
@@ -76,29 +61,27 @@ public class SpecimentTest extends LinearOpMode{
             }
         });
 
+        dashboard.startCameraStream(webcam, 30);
+
         waitForStart();
 
         while (opModeIsActive()){
+            if(pipeline.yellowCenter != null){
+                double frameCenter = (double) CAMERA_WIDTH / 2;
+                double errorX = pipeline.yellowCenter.x -frameCenter;
 
-//            Actions.runBlocking(drive.actionBuilder(startPose).lineToX(20).lineToY(-50).build());
-            alignToYellowSample(drive, drive.localizer.getPose());
-        }
-    }
-
-    public void alignToYellowSample(MecanumDrive drive, Pose2d currentPose) {
-        if (pipeline.yellowCenter != null) {
-            double frameCenterX = 160;
-            double errorX = pipeline.yellowCenter.x - frameCenterX;
-
-            if (Math.abs(errorX) > 15) {
-                double correction = errorX * 0.005;
-
-                Actions.runBlocking(drive.actionBuilder(currentPose)
-                        .strafeTo(new Vector2d(correction, currentPose.position.y))
-                        .build());
+                if(Math.abs(errorX) < 30){
+                        telemetry.addLine("detected");
+                        telemetry.update();
+                        break;
+                }
             }
+
+            Pose2d currentPose = drive.localizer.getPose();
+            Pose2d stepLeft = new Pose2d(currentPose.position.x, currentPose.position.y + 1.5, currentPose.heading.log());
+
+            Action strafeStep = drive.actionBuilder(currentPose).strafeTo(stepLeft.position).build();
+            Actions.runBlocking(strafeStep);
         }
     }
-
-
 }

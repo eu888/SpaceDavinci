@@ -28,6 +28,7 @@ public class Teleop1 extends LinearOpMode{
     DigitalChannel limitBtn;
     Servo servoLowerArm, servoLowerClaw, servoRol, servoUpperArm, servoUpperArmRol, servoUpperClaw;
     DcMotor motorRB, motorRF, motorLF, motorLB, motorBR1, motorBR2,armL, armR;
+
     @Override
     public void runOpMode() {
         /// Here we define in witch ports we connect our devices
@@ -49,8 +50,8 @@ public class Teleop1 extends LinearOpMode{
         /// Here we setup the modes of the motors
         armL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         armR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorBR2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorBR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBR2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBR1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         limitBtn.setMode(DigitalChannel.Mode.INPUT);
         motorRF.setDirection(DcMotorSimple.Direction.REVERSE);
         motorRB.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -64,7 +65,6 @@ public class Teleop1 extends LinearOpMode{
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         boolean toClose = false;
         boolean toChange = false;
-//        int targetUpperLift = 0;
         waitForStart();
         if (isStopRequested()) return;
         while (opModeIsActive()) {
@@ -79,18 +79,7 @@ public class Teleop1 extends LinearOpMode{
             double turn = -gamepad2.right_stick_x*Speed;
             drive.setDrivePowers(new PoseVelocity2d(new Vector2d(drives, strafe), turn));
             /// The controls of the main lift
-            if (gamepad2.triangle) {
-                servoLowerClaw.setPosition(SERVO_CLAW_CLOSED);
-                waitFor(200);
-                servoUpperClaw.setPosition(SERVO_UPPER_CLAW_OPEN);
-                /* targetUpperLift = 0; */
-            } else if (gamepad2.circle) {
-                motorBR1.setPower(0);
-                motorBR2.setPower(0);
-                /* targetUpperLift = 500; */
-            }
-            /// The controls for the horizontal arm
-            else if (gamepad2.dpad_left) {
+            if (gamepad2.dpad_left) {
                 armR.setPower(1);
                 armL.setPower(1);
             } else if (gamepad2.dpad_right) {
@@ -125,32 +114,18 @@ public class Teleop1 extends LinearOpMode{
                     toClose = false;
                     toChange = true;
                 }
-            } else if (toChange) {
-                servoUpperClaw.setPosition(SERVO_UPPER_CLAW_CLOSED);
-                waitFor(200);
-                servoLowerClaw.setPosition(SERVO_CLAW_OPEN);
-                waitFor(200);
-                toChange = false;
-            } /*else if(isNegative(motorBR2.getCurrentPosition())){
-                motorBR2.setTargetPosition(targetUpperLift);
-                motorBR2.setPower(-1);
-                motorBR2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                while (motorBR2.getCurrentPosition() > targetUpperLift){
-                    motorBR1.setPower(-1);
-                }
-            }else if(motorBR2.getCurrentPosition() > -7){
-                motorBR2.setTargetPosition(targetUpperLift);
+            } else if(gamepad2.dpad_up){
+                motorBR1.setPower(1);
                 motorBR2.setPower(1);
-                motorBR2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                while (motorBR2.getCurrentPosition() < targetUpperLift){
-                    motorBR1.setPower(1);
-                }
-            }*/
-            motorBR1.setPower(0.0);
-            motorBR2.setPower(0.0);
-            armL.setPower(0);
-            armR.setPower(0);
+            } else if(gamepad2.dpad_down){
+                motorBR1.setPower(-0.85);
+                motorBR2.setPower(-0.85);
+            }
 
+            motorBR1.setPower(0.02);
+            motorBR2.setPower(0.02);
+            armR.setPower(0);
+            armL.setPower(0);
         }
     }
     /**
