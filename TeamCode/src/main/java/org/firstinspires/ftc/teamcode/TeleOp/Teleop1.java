@@ -28,6 +28,10 @@ public class Teleop1 extends LinearOpMode{
     DigitalChannel limitBtn;
     Servo servoLowerArm, servoLowerClaw, servoRol, servoUpperArm, servoUpperArmRol, servoUpperClaw;
     DcMotor motorRB, motorRF, motorLF, motorLB, motorBR1, motorBR2,armL, armR;
+    final double POS1 = 0.64;
+    final double POS2 = 0.36;
+    final double POS3 = 0.5;
+
 
     @Override
     public void runOpMode() {
@@ -65,6 +69,8 @@ public class Teleop1 extends LinearOpMode{
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         boolean toClose = false;
         boolean toChange = false;
+        int rol = 0;
+        double pos = 0.5;
         waitForStart();
         if (isStopRequested()) return;
         while (opModeIsActive()) {
@@ -88,7 +94,7 @@ public class Teleop1 extends LinearOpMode{
             }
             /// The controls for pick up samples and others
             else if (gamepad2.square) {
-                servoUpperArm.setPosition(SERVO_UPPER_ARM_IN);
+                servoUpperArm.setPosition(SERVO_UPPER_ARM_IN-0.37);
                 servoUpperClaw.setPosition(SERVO_UPPER_CLAW_OPEN);
                 while (gamepad2.square) {
                     servoLowerClaw.setPosition(SERVO_CLAW_OPEN);
@@ -98,14 +104,14 @@ public class Teleop1 extends LinearOpMode{
                 }
             } else if (gamepad2.cross) {
                 servoUpperClaw.setPosition(SERVO_UPPER_CLAW_OPEN);
-                servoUpperArm.setPosition(1-0.125);
+                servoUpperArm.setPosition(SERVO_UPPER_ARM_IN-0.26);
                 servoUpperArmRol.setPosition(0.5);
                 servoLowerArm.setPosition(SERVO_LOWER_ARM_OUT);
                 waitFor(100);
                 servoLowerClaw.setPosition(SERVO_CLAW_CLOSED);
                 waitFor(320);
                 servoLowerArm.setPosition(SERVO_LOWER_ARM_IN);
-                servoRol.setPosition(0);
+                servoRol.setPosition(POS3);
                 toClose = true;
             } else if (toClose) {
                 armR.setPower(0.75);
@@ -114,13 +120,40 @@ public class Teleop1 extends LinearOpMode{
                     toClose = false;
                     toChange = true;
                 }
+                if (toChange){
+                    waitFor(450);
+                    servoUpperClaw.setPosition(SERVO_UPPER_CLAW_CLOSED);
+                    waitFor(350);
+                    servoLowerClaw.setPosition(SERVO_CLAW_OPEN);
+                }
             } else if(gamepad2.dpad_up){
                 motorBR1.setPower(1);
                 motorBR2.setPower(1);
             } else if(gamepad2.dpad_down){
-                motorBR1.setPower(-0.85);
-                motorBR2.setPower(-0.85);
+                motorBR1.setPower(-1);
+                motorBR2.setPower(-1);
+            } else if(gamepad2.circle){
+                servoUpperArm.setPosition(0.3);
+                servoUpperArmRol.setPosition(0.47);
+                waitFor(2000);
+                servoUpperClaw.setPosition(SERVO_UPPER_CLAW_OPEN);
+            } else if(gamepad1.circle){
+                servoLowerClaw.setPosition(SERVO_CLAW_CLOSED);
+                servoRol.setPosition(0.5);
+            } else if (gamepad2.triangle) {
+                if (rol == 0 && gamepad2.triangle) {
+                    pos = POS1;
+                    rol = 1;
+                } else if (rol == 1 && gamepad2.triangle) {
+                    pos = POS2;
+                    rol = 2;
+                } else if (rol == 2 && gamepad2.triangle) {
+                    pos = POS3;
+                    rol = 0;
+                }
+                servoRol.setPosition(pos);
             }
+
 
             motorBR1.setPower(0.02);
             motorBR2.setPower(0.02);

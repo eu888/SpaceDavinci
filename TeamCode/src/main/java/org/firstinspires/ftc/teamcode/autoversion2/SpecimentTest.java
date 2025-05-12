@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.autoversion2;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -26,7 +27,7 @@ public class SpecimentTest extends LinearOpMode{
     OpenCvCamera webcam;
     DcMotor motorRB, motorRF, motorLF, motorLB, armL, armR;
     Servo servoLowerArm, servoLowerClaw, servoRol, servoUpperArm, servoUpperArmRol, servoUpperClaw;
-    Pose2d startPose = new Pose2d(30, -60, 0);
+    Pose2d startPose = new Pose2d(30, -60, Math.toRadians(90));
 
     @Override
     public void runOpMode(){
@@ -61,27 +62,11 @@ public class SpecimentTest extends LinearOpMode{
             }
         });
 
-        dashboard.startCameraStream(webcam, 30);
+        new Thread(() -> dashboard.startCameraStream(webcam, 30)).start();
 
         waitForStart();
 
-        while (opModeIsActive()){
-            if(pipeline.yellowCenter != null){
-                double frameCenter = (double) CAMERA_WIDTH / 2;
-                double errorX = pipeline.yellowCenter.x -frameCenter;
-
-                if(Math.abs(errorX) < 30){
-                        telemetry.addLine("detected");
-                        telemetry.update();
-                        break;
-                }
-            }
-
-            Pose2d currentPose = drive.localizer.getPose();
-            Pose2d stepLeft = new Pose2d(currentPose.position.x, currentPose.position.y + 1.5, currentPose.heading.log());
-
-            Action strafeStep = drive.actionBuilder(currentPose).strafeTo(stepLeft.position).build();
-            Actions.runBlocking(strafeStep);
-        }
+        Action park = drive.actionBuilder(startPose).strafeToLinearHeading(new Vector2d(65,startPose.position.y), startPose.heading.log()).build();
+        Actions.runBlocking(park);
     }
 }
