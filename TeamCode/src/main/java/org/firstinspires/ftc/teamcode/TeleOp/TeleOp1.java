@@ -90,14 +90,15 @@ public class TeleOp1 extends LinearOpMode {
 
         while (opModeIsActive()){
             double motorPower = 0.8;
+            double launchPower = launchPowerNormalBattery;
 
-            if(gamepad1.triangle){
-                servoBallLift.setPosition(servoBallLiftDown);
-            } else if (gamepad1.circle) {
-                motorLauncher.setPower(launchPower);
-            } else if (gamepad1.square) {
+            if (getBatteryVoltage(hardwareMap) < batteryThreshold){
+                launchPower = launchPowerLowBattery;
+            }
+
+            if (gamepad1.square) {
                 servoBallLift.setPosition(servoBallLiftUp);
-                waitFor(elapsedTime, 600, opModeIsActive());
+                waitFor(this, elapsedTime, 600);
                 servoBallLift.setPosition(servoBallLiftDown);
             } else if (gamepad1.right_bumper) {
                  motorPower = 0.6;
@@ -109,7 +110,11 @@ public class TeleOp1 extends LinearOpMode {
                 motorIntake.setPower(0);
             } else if  (gamepad1.dpad_left) {
                 motorLauncher.setPower(idlePower);
+            } else if (gamepad1.circle) {
+                motorLauncher.setPower(launchPower);
             }
+
+            telemetry.addData("Battery voltage", getBatteryVoltage(hardwareMap));
 
             double drives = -gamepad1.left_stick_y* motorPower;
             double strafe = -gamepad1.left_stick_x* motorPower;
