@@ -9,10 +9,11 @@ import org.opencv.core.Mat;
 import java.util.ArrayList;
 
 public class AprilTagDetectionPipeline extends OpenCvPipeline {
-    private long nativeAprilTagPtr;
+    private final long nativeAprilTagPtr;
     private final double tagSize;
     private final double fx, fy, cx, cy;
-    private ArrayList<AprilTagDetection> latestDetections = new ArrayList<>();
+    private final ArrayList<AprilTagDetection> latestDetections = new ArrayList<>();
+    final Mat gray = new Mat();
 
     public AprilTagDetectionPipeline(double tagSize, double fx, double fy, double cx, double cy) {
         this.tagSize = tagSize;
@@ -26,7 +27,6 @@ public class AprilTagDetectionPipeline extends OpenCvPipeline {
 
     @Override
     public synchronized Mat processFrame(Mat input) {
-        final Mat gray = new Mat();
         Imgproc.cvtColor(input, gray, Imgproc.COLOR_RGBA2GRAY);
         ArrayList<AprilTagDetection> detections =
                 AprilTagDetectorJNI.runAprilTagDetectorSimple(
@@ -36,9 +36,7 @@ public class AprilTagDetectionPipeline extends OpenCvPipeline {
                 );
         latestDetections.clear();
         if (detections != null) {
-            for (AprilTagDetection det : detections) {
-                latestDetections.add(det);
-            }
+            latestDetections.addAll(detections);
         }
         return input;
     }
@@ -48,7 +46,7 @@ public class AprilTagDetectionPipeline extends OpenCvPipeline {
     }
 
     @Override
-    public void finalize() {
+    protected void finalize() {
         AprilTagDetectorJNI.releaseApriltagDetector(nativeAprilTagPtr);
     }
 }

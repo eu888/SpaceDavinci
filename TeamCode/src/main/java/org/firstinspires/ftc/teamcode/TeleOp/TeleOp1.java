@@ -6,6 +6,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import java.util.ArrayList;
 
@@ -30,16 +32,18 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 
-@TeleOp(name = "TeleOp")
+@TeleOp(name = "TeleOp", group = "TeleOp")
 @Config
 public class TeleOp1 extends LinearOpMode {
-    DcMotor motorLauncher, motorIntake;
+    DcMotor motorIntake;
+    DcMotorEx motorLauncher;
     DcMotor motorUpperLeft, motorUpperRight, motorLowerLeft, motorLowerRight;
     Servo servoBallLift;
     Pose2d beginPose = new Pose2d(0, 0, 0);
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
     FtcDashboard dashboard;
+    PIDFCoefficients pidfCoefficients;
 
     @Override
     public void runOpMode(){
@@ -52,16 +56,22 @@ public class TeleOp1 extends LinearOpMode {
         motorLowerRight = hardwareMap.get(DcMotor.class, "motorLowerRight");
 
         //AUX motors
-        motorLauncher = hardwareMap.get(DcMotor.class, "motorLauncher");
+        motorLauncher = hardwareMap.get(DcMotorEx.class, "motorLauncher");
         motorIntake = hardwareMap.get(DcMotor.class, "motorIntake");
+
+        motorLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //Servos
         servoBallLift = hardwareMap.get(Servo.class, "servoBallLift");
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
+
         //ElapsedTime
         ElapsedTime elapsedTime = new ElapsedTime();
+
+        //PIDF coefficients
+        pidfCoefficients = new PIDFCoefficients(P, 0, D, F);
 
         //Camera setup
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -90,11 +100,6 @@ public class TeleOp1 extends LinearOpMode {
 
         while (opModeIsActive()){
             double motorPower = 0.8;
-            double launchPower = launchPowerNormalBattery;
-
-            if (getBatteryVoltage(hardwareMap) < batteryThreshold){
-                launchPower = launchPowerLowBattery;
-            }
 
             if (gamepad1.square) {
                 servoBallLift.setPosition(servoBallLiftUp);
@@ -109,9 +114,9 @@ public class TeleOp1 extends LinearOpMode {
             } else if (gamepad1.dpad_right) {
                 motorIntake.setPower(0);
             } else if  (gamepad1.dpad_left) {
-                motorLauncher.setPower(idlePower);
+                motorLauncher.setVelocity(launchVelocityIdle);
             } else if (gamepad1.circle) {
-                motorLauncher.setPower(launchPower);
+                motorLauncher.setVelocity(launchVelocityOn);
             }
 
             telemetry.addData("Battery voltage", getBatteryVoltage(hardwareMap));
