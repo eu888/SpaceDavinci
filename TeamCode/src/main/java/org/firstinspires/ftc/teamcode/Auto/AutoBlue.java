@@ -16,8 +16,8 @@ import static org.firstinspires.ftc.teamcode.constants.constants.*;
 import static org.firstinspires.ftc.teamcode.libs.TeleOpLibs.*;
 
 
-@Autonomous(name="Auto Red", group="RED")
-public class AutoRed  extends LinearOpMode {
+@Autonomous(name="Auto Blue", group="Blue")
+public class AutoBlue  extends LinearOpMode {
     MecanumDrive  drive;
     ElapsedTime time;
 
@@ -55,13 +55,8 @@ public class AutoRed  extends LinearOpMode {
         }
         servoBallLift.setPosition(servoBallLiftDown);
         waitFor(this, time, 250);
-
-        motorLauncherA.setVelocity(launchVelocityOn);
-        motorLauncherB.setVelocity(launchVelocityOn);
-        motorIntakeA.setPower(-intakePower+0.2);
-        motorIntakeB.setPower(-intakePower);
-        Actions.runBlocking(drive.actionBuilder(new Pose2d(60, -24, Math.PI))
-                .strafeToSplineHeading(new Vector2d(-34,34), Math.toRadians(135))
+        Actions.runBlocking(drive.actionBuilder(new Pose2d(-64, -20, Math.PI))
+                .strafeToSplineHeading(new Vector2d(-40,-20), Math.toRadians(135))
                 .build());
 
         waitFor(this, time, 1500);

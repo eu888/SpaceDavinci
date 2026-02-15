@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
-import java.util.ArrayList;
 
 //Self made libs
 import static org.firstinspires.ftc.teamcode.constants.constants.*;
@@ -21,33 +21,27 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-//For AprilTags
-import org.openftc.apriltag.AprilTagDetection;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.firstinspires.ftc.teamcode.libs.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 
 @TeleOp(name = "TeleOp", group = "TeleOp")
 @Config
 public class TeleOp1 extends LinearOpMode {
-    DcMotor motorIntake;
-    DcMotorEx motorLauncher;
+    DcMotor motorIntakeA, motorIntakeB;
+    DcMotorEx motorLauncherA, motorLauncherB;
     DcMotor motorUpperLeft, motorUpperRight, motorLowerLeft, motorLowerRight;
     Servo servoBallLift;
+
     Pose2d beginPose = new Pose2d(0, 0, 0);
-    OpenCvCamera camera;
-    AprilTagDetectionPipeline aprilTagDetectionPipeline;
     FtcDashboard dashboard;
     PIDFCoefficients pidfCoefficients;
 
     @Override
     public void runOpMode(){
         dashboard = FtcDashboard.getInstance();
+
+        //PIDF coefficients
+        pidfCoefficients = new PIDFCoefficients(P, 0, D, F);
 
         //Drive Base
         motorUpperLeft = hardwareMap.get(DcMotor.class,"motorUpperLeft");
@@ -56,42 +50,20 @@ public class TeleOp1 extends LinearOpMode {
         motorLowerRight = hardwareMap.get(DcMotor.class, "motorLowerRight");
 
         //AUX motors
-        motorLauncher = hardwareMap.get(DcMotorEx.class, "motorLauncher");
-        motorIntake = hardwareMap.get(DcMotor.class, "motorIntake");
+        motorLauncherA = hardwareMap.get(DcMotorEx.class, "motorLauncherA");
+        motorLauncherB = hardwareMap.get(DcMotorEx.class, "motorLauncherB");
+        motorIntakeA = hardwareMap.get(DcMotor.class, "motorIntakeA");
+        motorIntakeB = hardwareMap.get(DcMotor.class, "motorIntakeB");
 
-        motorLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorIntakeA.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        motorLauncherA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        motorLauncherB.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
         //Servos
         servoBallLift = hardwareMap.get(Servo.class, "servoBallLift");
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-
-
-        //ElapsedTime
-        ElapsedTime elapsedTime = new ElapsedTime();
-
-        //PIDF coefficients
-        pidfCoefficients = new PIDFCoefficients(P, 0, D, F);
-
-        //Camera setup
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagSize, fx, fy, cx, cy);
-        camera.setPipeline(aprilTagDetectionPipeline);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                camera.startStreaming(800, 448, OpenCvCameraRotation.UPRIGHT);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-                telemetry.addData("Camera error", errorCode);
-                telemetry.update();
-            }
-        });
-
-        dashboard.startCameraStream(camera, 30);
 
         waitForStart();
         if (isStopRequested()) {
@@ -102,21 +74,39 @@ public class TeleOp1 extends LinearOpMode {
             double motorPower = 0.8;
 
             if (gamepad1.square) {
-                servoBallLift.setPosition(servoBallLiftUp);
-                waitFor(this, elapsedTime, 600);
-                servoBallLift.setPosition(servoBallLiftDown);
-            } else if (gamepad1.right_bumper) {
+                new Thread(() ->{
+                    try {
+                        servoBallLift.setPosition(servoBallLiftUp);
+                        Thread.sleep(1500);
+                        servoBallLift.setPosition(servoBallLiftDown);
+                    }
+                    catch (InterruptedException e){
+                        Thread.currentThread().interrupt();
+                    }
+                }).start();
+
+            }
+            if (gamepad1.right_bumper) {
                  motorPower = 0.6;
-            } else if (gamepad1.dpad_down) {
-                motorIntake.setPower(-intakePower);
-            } else if (gamepad1.dpad_up) {
-                motorIntake.setPower(intakePower);
-            } else if (gamepad1.dpad_right) {
-                motorIntake.setPower(0);
-            } else if  (gamepad1.dpad_left) {
-                motorLauncher.setVelocity(launchVelocityIdle);
-            } else if (gamepad1.circle) {
-                motorLauncher.setVelocity(launchVelocityOn);
+            }
+            if (gamepad1.dpad_down) {
+                motorIntakeA.setPower(-intakePower+0.2);
+                motorIntakeB.setPower(-intakePower);
+            }
+            if (gamepad1.dpad_up) {
+                motorIntakeA.setPower(intakePower);
+                motorIntakeB.setPower(intakePower);
+            }
+            if (gamepad1.dpad_right) {
+                motorIntakeA.setPower(0);
+                motorIntakeB.setPower(0);
+            }
+            if  (gamepad1.dpad_left) {
+                servoBallLift.setPosition(servoBallLiftDown);
+            }
+            if (gamepad1.circle) {
+                motorLauncherA.setVelocity(launchVelocityOn);
+                motorLauncherB.setVelocity(launchVelocityOn);
             }
 
             telemetry.addData("Battery voltage", getBatteryVoltage(hardwareMap));
@@ -125,17 +115,8 @@ public class TeleOp1 extends LinearOpMode {
             double strafe = -gamepad1.left_stick_x* motorPower;
             double turn = -gamepad1.right_stick_x* motorPower;
             drive.setDrivePowers(new PoseVelocity2d(new Vector2d(drives, strafe), turn));
-
-            ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getLatestDetections();
-
-            if (!detections.isEmpty()) {
-                for (AprilTagDetection tag : detections) {
-                    telemetry.addLine(String.format("Detected tag ID=%d", tag.id));
-                    telemetry.addLine(String.format("X: %.2f m", tag.pose.x));
-                    telemetry.addLine(String.format("Y: %.2f m", tag.pose.y));
-                    telemetry.addLine(String.format("Z: %.2f m", tag.pose.z));
-                }
-            }
+            telemetry.addData("vel A: ", motorLauncherA.getVelocity());
+            telemetry.addData("vel B: ", motorLauncherB.getVelocity());
             telemetry.update();
         }
     }

@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Disabled
-public class TeleOpLibs {
+public class TeleOpLibs extends Thread{
     /**
      * This is a wait function that uses elapseTime
      * @param opMode used to get opModeIsActive() to check if the TeleOp is active.
@@ -16,11 +16,15 @@ public class TeleOpLibs {
      * @param milliseconds The time to wait in milliseconds.
      */
     public static void waitFor(@NonNull LinearOpMode opMode, @NonNull ElapsedTime elapsedTime, int milliseconds){
-        elapsedTime.reset();
-        while(opMode.opModeIsActive() && elapsedTime.milliseconds() < milliseconds){
-            opMode.telemetry.addData("Wait", elapsedTime.milliseconds());
-            opMode.telemetry.update();
-            opMode.idle();
+        try {
+            elapsedTime.reset();
+            while(opMode.opModeIsActive() && elapsedTime.milliseconds() < milliseconds){
+                opMode.telemetry.addData("Wait", elapsedTime.milliseconds());
+                opMode.telemetry.update();
+                opMode.idle();
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
         }
     }
 
