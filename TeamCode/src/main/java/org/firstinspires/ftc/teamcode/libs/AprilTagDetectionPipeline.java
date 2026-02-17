@@ -50,3 +50,4 @@ public class AprilTagDetectionPipeline extends OpenCvPipeline {
         AprilTagDetectorJNI.releaseApriltagDetector(nativeAprilTagPtr);
     }
 }
+

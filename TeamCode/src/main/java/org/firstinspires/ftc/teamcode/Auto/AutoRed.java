@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
-import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -11,9 +11,18 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+
 import static org.firstinspires.ftc.teamcode.constants.constants.*;
-import static org.firstinspires.ftc.teamcode.libs.TeleOpLibs.*;
+import org.firstinspires.ftc.teamcode.libs.AprilTagDetectionPipeline;
+import org.firstinspires.ftc.teamcode.libs.Tag;
+import org.openftc.apriltag.AprilTagDetection;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import java.util.ArrayList;
 
 
 @Autonomous(name="Auto Red", group="RED")
@@ -28,12 +37,39 @@ public class AutoRed  extends LinearOpMode {
 
     Servo servoBallLift;
 
+    AprilTagDetectionPipeline aprilTagDetectionPipeline;
+    Tag currentTag;
+    OpenCvCamera camera;
+    FtcDashboard dashboard;
 
     @Override
     public void runOpMode(){
-        drive = new MecanumDrive(hardwareMap, new Pose2d(60,-24,Math.PI));
+        drive = new MecanumDrive(hardwareMap, startPoseRedLower);
         time = new ElapsedTime();
         pidfCoefficients = new PIDFCoefficients(P, 0, D, F);
+        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagSize,fx,fy,cx,cy);
+        dashboard = FtcDashboard.getInstance();
+        currentTag = new Tag();
+
+        //Camera setup
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        camera.setPipeline(aprilTagDetectionPipeline);
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int i) {
+                telemetry.addData("Camera error: ", i);
+                telemetry.update();
+            }
+        });
+
+
+        dashboard.startCameraStream(camera, 60);
 
         //AUX motors
         motorLauncherA = hardwareMap.get(DcMotorEx.class, "motorLauncherA");
@@ -53,22 +89,40 @@ public class AutoRed  extends LinearOpMode {
         if (isStopRequested()) {
             return;
         }
-        servoBallLift.setPosition(servoBallLiftDown);
-        waitFor(this, time, 250);
 
-        motorLauncherA.setVelocity(launchVelocityOn);
-        motorLauncherB.setVelocity(launchVelocityOn);
-        motorIntakeA.setPower(-intakePower+0.2);
-        motorIntakeB.setPower(-intakePower);
-        Actions.runBlocking(drive.actionBuilder(new Pose2d(60, -24, Math.PI))
-                .strafeToSplineHeading(new Vector2d(-34,34), Math.toRadians(135))
+        ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getLatestDetections();
+        if(!detections.isEmpty()){
+            for(AprilTagDetection tag : detections){
+                currentTag.tagId = tag.id;
+                currentTag.X = tag.pose.x;
+                currentTag.Z = tag.pose.z;
+            }
+        }
+
+        double distance = Math.sqrt(Math.pow(currentTag.Z,2) - Math.pow(difHeight, 2));
+        double forwardError = distance-0.5;
+        double strafeError = currentTag.X;
+
+        double fieldX = strafeError*Math.cos(drive.localizer.getPose().heading.real) - forwardError*Math.sin(drive.localizer.getPose().heading.real);
+        double fieldY = strafeError*Math.sin(drive.localizer.getPose().heading.real) + forwardError*Math.cos(drive.localizer.getPose().heading.real);
+
+        double targetX = drive.localizer.getPose().position.x + fieldX;
+        double targetY = drive.localizer.getPose().position.y + fieldY;
+        double targetHeading = drive.localizer.getPose().heading.real + 0;//TODO: add heading error
+
+        Vector2d targetVector = new Vector2d(targetX, targetY);
+        Actions.runBlocking(drive.actionBuilder(startPoseRedLower)
+                .strafeToSplineHeading(targetVector, Math.toRadians(targetHeading))
                 .build());
 
-        waitFor(this, time, 1500);
-        servoBallLift.setPosition(servoBallLiftUp);
-        waitFor(this, time, 2700);
-        servoBallLift.setPosition(servoBallLiftDown);
-        waitFor(this, time, 200);
+        telemetry.addLine(String.format("Detected tag ID=%d", currentTag.tagId));
+        telemetry.addLine(String.format("X: %.2f m", currentTag.X));
+        telemetry.addLine(String.format("Y: %.2f m", currentTag.Y));
+        telemetry.addLine(String.format("Z: %.2f m", currentTag.Z));
+        telemetry.update();
+
+
+
     }
 
 
