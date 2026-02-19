@@ -108,7 +108,7 @@ public class AutoRed  extends LinearOpMode {
 
         double targetX = drive.localizer.getPose().position.x + fieldX;
         double targetY = drive.localizer.getPose().position.y + fieldY;
-        double targetHeading = drive.localizer.getPose().heading.real;//TODO: add heading error
+        double targetHeading = drive.localizer.getPose().heading.real + 0;//TODO: add heading error
 
         Vector2d targetVector = new Vector2d(targetX, targetY);
         Actions.runBlocking(drive.actionBuilder(startPoseRedLower)
