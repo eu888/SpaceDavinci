@@ -15,8 +15,8 @@ public final class constants {
     public static final double tagSize = 0.2065;
     public static final double launchVelocityOn = 2000;
     public static final double intakePower = 1;
-    public static final double servoBallLiftUp = 1;
-    public static final double servoBallLiftDown = 0.76;
+    public static final double servoBallLiftUp = 0.94;
+    public static final double servoBallLiftDown = 0.52;
     public static final double P = 130;
     public static final double F = 25;
     public static final double D = 12;

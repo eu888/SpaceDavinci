@@ -19,14 +19,14 @@ public class LaunchTest extends LinearOpMode {
     FtcDashboard dashboard;
     TelemetryPacket telemetryPacket;
 
-    public double highVelocity = 3500;
-    public double lowVelocity = 2500;
+    public double highVelocity = 1500;
+    public double lowVelocity = 900;
     public double curTargetVelocity = highVelocity;
     public static double curVelocity;
 
-    double F = 100;
-    double P = 120;
-    double D = 4;
+    double F =    0;
+    double P = 0;
+    double D = 0;
 
     double[] stepSizes = {10.0, 1.0, 0.1, 0.001, 0.0001};
     int stepIndex = 1;
@@ -41,7 +41,6 @@ public class LaunchTest extends LinearOpMode {
         motorIntake = hardwareMap.get(DcMotor.class, "motorIntake");
 
         pidfCoefficients = new PIDFCoefficients(P, 0, D, F);
-        //motorLaunchB.setDirection(DcMotor.Direction.REVERSE);
         motorLaunchA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         motorLaunchB.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 

@@ -34,6 +34,7 @@ public class TeleOp1 extends LinearOpMode {
     Pose2d beginPose = new Pose2d(0, 0, 0);
     FtcDashboard dashboard;
     PIDFCoefficients pidfCoefficients;
+    boolean activated;
 
     @Override
     public void runOpMode(){
@@ -64,6 +65,8 @@ public class TeleOp1 extends LinearOpMode {
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
+        activated=false;
+
         waitForStart();
         if (isStopRequested()) {
             return;
@@ -71,6 +74,11 @@ public class TeleOp1 extends LinearOpMode {
 
         while (opModeIsActive()){
             double motorPower = 0.8;
+
+            if(!activated){
+                servoBallLift.setPosition(servoBallLiftDown);
+                activated=true;
+            }
 
             if (gamepad1.square) {
                 new Thread(() ->{
@@ -89,7 +97,7 @@ public class TeleOp1 extends LinearOpMode {
                  motorPower = 0.6;
             }
             if (gamepad1.dpad_down) {
-                motorIntakeA.setPower(-intakePower+0.2);
+                motorIntakeA.setPower(-intakePower);
                 motorIntakeB.setPower(-intakePower);
             }
             if (gamepad1.dpad_up) {
