@@ -14,7 +14,6 @@ import com.acmerobotics.dashboard.config.Config;
 public class LaunchTest extends LinearOpMode {
 
     public DcMotorEx motorLaunchA, motorLaunchB;
-    DcMotor motorIntake;
     PIDFCoefficients pidfCoefficients;
     FtcDashboard dashboard;
     TelemetryPacket telemetryPacket;
@@ -24,7 +23,7 @@ public class LaunchTest extends LinearOpMode {
     public double curTargetVelocity = highVelocity;
     public static double curVelocity;
 
-    double F =    0;
+    double F = 0;
     double P = 0;
     double D = 0;
 
@@ -38,7 +37,6 @@ public class LaunchTest extends LinearOpMode {
 
         motorLaunchA = hardwareMap.get(DcMotorEx.class, "motorLauncherA");
         motorLaunchB = hardwareMap.get(DcMotorEx.class, "motorLauncherB");
-        motorIntake = hardwareMap.get(DcMotor.class, "motorIntake");
 
         pidfCoefficients = new PIDFCoefficients(P, 0, D, F);
         motorLaunchA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
@@ -83,8 +81,6 @@ public class LaunchTest extends LinearOpMode {
             if (gamepad1.crossWasPressed()){
                 D -= stepSizes[stepIndex];
             }
-
-            motorIntake.setPower(0.7);
 
             pidfCoefficients = new PIDFCoefficients(P, 0, D, F);
             motorLaunchA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);

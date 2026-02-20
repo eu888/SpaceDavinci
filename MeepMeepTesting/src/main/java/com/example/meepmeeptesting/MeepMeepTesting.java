@@ -12,12 +12,25 @@ public class MeepMeepTesting {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(72, 50, Math.toRadians(180), Math.toRadians(180), 17)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(64, 24, Math.PI))
-                .strafeToSplineHeading(new Vector2d(-4,-4), Math.toRadians(225))
-                .strafeToLinearHeading(new Vector2d(-12.3, -46.7), Math.toRadians(270))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(61.3, 24, Math.PI))
+                .strafeToSplineHeading(new Vector2d(-23,23), Math.toRadians(180))
+                .strafeTo(new Vector2d(-31,31)).turnTo(Math.toRadians(135))
+                .strafeToSplineHeading(new Vector2d(-23,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(-11.4,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(-11.4,58), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(-11.4,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(-31,31), Math.toRadians(135))
+                .strafeToSplineHeading(new Vector2d(-23,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(12,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(12,58), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(12,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(-23,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(-31,31), Math.toRadians(135))
+                .strafeToSplineHeading(new Vector2d(-23,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(-9,23), Math.toRadians(90))
                 .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_DARK)

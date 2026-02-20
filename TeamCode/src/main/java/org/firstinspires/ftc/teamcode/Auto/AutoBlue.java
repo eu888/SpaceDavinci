@@ -27,11 +27,12 @@ public class AutoBlue  extends LinearOpMode {
     PIDFCoefficients pidfCoefficients;
 
     Servo servoBallLift;
+    Pose2d startPose = new Pose2d(61.3, 24, Math.PI);
 
 
     @Override
     public void runOpMode(){
-        drive = new MecanumDrive(hardwareMap, new Pose2d(60,-24,Math.PI));
+        drive = new MecanumDrive(hardwareMap, new Pose2d(61.3, 24, Math.PI));
         time = new ElapsedTime();
         pidfCoefficients = new PIDFCoefficients(P, 0, D, F);
 
@@ -54,16 +55,43 @@ public class AutoBlue  extends LinearOpMode {
             return;
         }
         servoBallLift.setPosition(servoBallLiftDown);
-        waitFor(this, time, 250);
-        Actions.runBlocking(drive.actionBuilder(new Pose2d(-64, -20, Math.PI))
-                .strafeToSplineHeading(new Vector2d(-40,-20), Math.toRadians(135))
-                .build());
-
-        waitFor(this, time, 1500);
-        servoBallLift.setPosition(servoBallLiftUp);
-        waitFor(this, time, 2700);
-        servoBallLift.setPosition(servoBallLiftDown);
-        waitFor(this, time, 200);
+        waitFor(this, time, 500);
+        motorIntakeA.setPower(-intakePower);
+        motorIntakeB.setPower(-intakePower);
+        motorLauncherA.setVelocity(launchVelocityOn);
+        motorLauncherB.setVelocity(launchVelocityOn);
+        Actions.runBlocking( drive.actionBuilder(startPose)
+                .strafeToSplineHeading(new Vector2d(-23,22), Math.toRadians(140))
+                .strafeToLinearHeading(new Vector2d(-35,35), Math.toRadians(135))
+                .waitSeconds(0.7)
+                .stopAndAdd(() -> servoBallLift.setPosition(servoBallLiftUp))
+                .waitSeconds(1.3)
+                .stopAndAdd(() -> servoBallLift.setPosition(servoBallLiftDown))
+                .waitSeconds(0.2)
+                .strafeToSplineHeading(new Vector2d(-23,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(-12.5,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(-12.5,58), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(-12.5,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(-35,35), Math.toRadians(135))
+                .waitSeconds(0.7)
+                .stopAndAdd(() -> servoBallLift.setPosition(servoBallLiftUp))
+                .waitSeconds(1.3)
+                .stopAndAdd(() -> servoBallLift.setPosition(servoBallLiftDown))
+                .waitSeconds(0.2)
+                .strafeToSplineHeading(new Vector2d(-23,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(11.4,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(11.4,58), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(11.4,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(-23,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(-35,35), Math.toRadians(135))
+                .waitSeconds(0.7)
+                .stopAndAdd(() -> servoBallLift.setPosition(servoBallLiftUp))
+                .waitSeconds(1.3)
+                .stopAndAdd(() -> servoBallLift.setPosition(servoBallLiftDown))
+                .waitSeconds(0.2)
+                .strafeToSplineHeading(new Vector2d(-23,23), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(-9,23), Math.toRadians(90))
+                .build() );
     }
 
 
